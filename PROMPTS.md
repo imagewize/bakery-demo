@@ -25,11 +25,11 @@ vibe --agent <agent> --smart-approve
 
 Done with the `demo-project-setup` skill. To repeat it by hand:
 
-**Images.** The photos are in place in `images/` (22 from Unsplash, resized to at most 1600px wide
-with `scripts/resize-images.sh`, one `images/CREDITS.md` row each, uses content-verified in the
-browser). Never invent stock URLs: made-up photo IDs give broken images, and the theme needs
-local files anyway. `images/CREDITS.md` names the hero, the cake cards, the workshop, about and
-contact photos, and the spares.
+**Images.** 21 photos from Unsplash in `images/`, resized to at most 1600px wide with
+`scripts/resize-images.sh`, one `images/CREDITS.md` row each. Each was checked by eye on a numbered
+contact sheet, and the primary per section was opened at full size; `CREDITS.md` names the subject,
+the primary per section, the alternates and the spares. Never invent stock URLs: made-up photo IDs
+give broken images, and the theme needs local files anyway.
 
 **Local site.** Laravel Valet, with Aludra and Contact Form 7:
 
@@ -76,7 +76,7 @@ Brief:
 
 This is a homepage, not a landing page. Sections: header, hero, cakes, workshop, about, order form (fields: name, email, date, cake, message), contact, footer.
 
-Images: use only the files in images/ (credits, orientations and content-verified uses in images/CREDITS.md), as <img> with width, height, alt text and loading="lazy" except the hero. Hero: images/brooke-lark-pGM4sjt_BdQ-unsplash.jpg (bread and butter on a work table, landscape, full-bleed). Cake cards: the portrait files (brooke-lark-V4MBq8kue3U, deva-williamson-S2jw81lfrG0, hamideh-jafari-974x2guatCs, katie-rosario-QNyRp21hb5I are the strongest; heather-barnes-WbZesfqwR-A, kirsten-drew-n49BjsFf5dI, ulysse-pointcheval-1WmlAiYgnoI as alternates). Workshop: farhan-shaikh-rVOIf6tc5DU (hands kneading), alternates nadya-spetnitskaya-tOYiQxF9-Ys and ulysse-pointcheval-1WmlAiYgnoI. About: mae-mu-BxsGyQwjwaw, alternates alan-aprilio-FJyjcrEBsMo and estudio-bloom-B4LfDN2vMGg. Contact: phillip-flores-3OZSvjQWhZk (shop front), alternate tabitha-turner-Ns2aJ5OXKds. No url() backgrounds, no external image URLs.
+Images: use only the files in images/ (subjects, orientations and uses in images/CREDITS.md), as <img> with width, height, alt text written from the subject in CREDITS.md and loading="lazy" except the hero. Hero: images/tabitha-turner-Ns2aJ5OXKds-unsplash.jpg (croissants and pains au chocolat on a board with a rolling pin, whisk, eggs and butter, top-down, landscape), full-bleed with the text over it. Cake cards: katie-rosario-QNyRp21hb5I (pink drip cake), heather-barnes-WbZesfqwR-A (macarons), deva-williamson-S2jw81lfrG0 (strawberry cupcakes), mockup-graphics-OdE9bKLNhQs (strawberry tart slice); alternates farhan-shaikh-rVOIf6tc5DU (palmiers) and brooke-lark-V4MBq8kue3U (fruit tarts). Workshop: nadya-spetnitskaya-tOYiQxF9-Ys (hands kneading dough), alternate hamideh-jafari-974x2guatCs (sifting flour). About: alan-aprilio-FJyjcrEBsMo (sourdough loaf), alternates mae-mu-BxsGyQwjwaw and angelo-pantazis-2-U0A2tNYhM (bread shelves). Contact: do-nhu--CC1HQ0O8YY (patisserie shop front; crop to the sign and the lit kitchen, the window shows another shop's branding and Vietnamese prices), alternate yeh-xintong-go3DT3PpIw4 (bakery display). Do not use the photos marked spare. No url() backgrounds, no external image URLs.
 
 Minimal questions: state your assumptions at the top of your reply, then build.
 
@@ -155,7 +155,7 @@ Create theme-lindeboom/ in this repository as a fork of ~/code/aviendha for Bakk
 - Fonts: bundle the fonts from index.html as woff2 in theme-lindeboom/assets/fonts/ and register them with theme.json fontFace.
 - patterns/homepage.php: one pattern mirroring index.html section by section, copy verbatim. For every section, copy the block's markup from ~/code/aludra/patterns/ and change only the content:
   - header: header part from core blocks (navigation overlayMenu mobile)
-  - hero: aludra/hero-split (see section-hero-split.php)
+  - hero: core/cover with the hero photo full-bleed and the text over it (no Aludra block holds a full-bleed photo: aludra/hero-split puts the image beside the text and aludra/hero-banner has no image), listed as a gap
   - cakes: aludra/feature-cards (see section-capabilities.php)
   - workshop: aludra/service-blocks (see section-split.php)
   - about: aludra/about (see section-about.php)
