@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bakkerij Lindeboom — familiebakkerij in Utrecht</title>
+<meta name="description" content="Bakkerij Lindeboom is een familiebakkerij in Utrecht-Oost, sinds 1987. Elke ochtend vers brood, taarten en gebak. Bestel een taart of kom langs in de winkel.">
+
+<!--
+  Ontwerp: adaptatie van het 'Savor'-ontwerpsysteem (Food & Beverage, plugin87/ux-ui-agent-skills):
+  warme crème vlakken, donkerbruin scherm-inkt, crème knoppen met 5px radius, geen randen, geen schaduw,
+  volledig uitgevlakte foto's zonder randen. Palet is richting warmbruin geschoven (niet kastanje/maroon),
+  letters zijn open-licentie: Fraunces (display, OFL, ook op Fontsource als 'fraunces') en
+  Hanken Grotesk (body, OFL, Fontsource 'hanken-grotesk') zodat het blokthema ze als woff2 kan bundelen.
+  Verwijder de Google Fonts-links zodra de fonts gebundeld zijn.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
+
+<style>
+/* ============================================================
+   Ontwerptokens — vóórlopers op theme.json-presets.
+   Gebruik: --wp--preset--color/spacing/font-size/font-family.
+   Let op: --wp--preset--border-radius bestaat niet in WordPress;
+   radii heten hier --lindeboom--radius--*.
+   ============================================================ */
+:root {
+  --wp--preset--color--base: #fbf4e4;          /* warme crème, paginavlak */
+  --wp--preset--color--contrast: #3b2415;      /* diep warmbruin, tekst en donkere vlakken */
+  --wp--preset--color--contrast-dark: #2a1608; /* hover van de inverse knop */
+  --wp--preset--color--primary: #efe1c3;       /* knopcode-crème, ook voetnotenvlak */
+  --wp--preset--color--primary-hover: #e3d2ac;
+  --wp--preset--color--secondary: #f5ebd9;     /* vlak van donkere crème voor banden */
+  --wp--preset--color--tertiary: #9c3524;      /* bessenrood, prijzen en kleine accenten */
+  --wp--preset--color--ink-muted: #755d43;     /* bijschrift op licht */
+  --wp--preset--color--cream-muted: #d9c8ad;   /* bijschrift op donkerbruin */
+  --wp--preset--color--field: #fffdf6;         /* invulvelden */
+
+  --wp--preset--font-family--display: "Fraunces", Georgia, "Times New Roman", serif;
+  --wp--preset--font-family--body: "Hanken Grotesk", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  --wp--preset--font-size--small: 0.875rem;   /* 14px, bijschriften en kleine tekst */
+  --wp--preset--font-size--medium: 1.0625rem; /* 17px, lopende tekst */
+  --wp--preset--font-size--large: 1.375rem;   /* 22px, kaarttitels */
+  --wp--preset--font-size--x-large: clamp(1.875rem, 1.3rem + 2.2vw, 2.625rem);   /* sectiekoppen */
+  --wp--preset--font-size--xx-large: clamp(2.5rem, 1.1rem + 6.5vw, 5.25rem);     /* hero */
+
+  --wp--preset--spacing--20: 0.5rem;
+  --wp--preset--spacing--30: 1rem;
+  --wp--preset--spacing--40: 1.5rem;
+  --wp--preset--spacing--50: 2rem;
+  --wp--preset--spacing--60: 3rem;
+  --wp--preset--spacing--70: 4.5rem;
+  --wp--preset--spacing--80: 6rem;
+
+  --lindeboom--radius--button: 5px;
+  --lindeboom--font-optical-size: auto;
+}
+
+/* ---------------- Basis ---------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--wp--preset--color--base);
+  color: var(--wp--preset--color--contrast);
+  font-family: var(--wp--preset--font-family--body);
+  font-size: var(--wp--preset--font-size--medium);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+
+h1, h2, h3 {
+  font-family: var(--wp--preset--font-family--display);
+  font-optical-sizing: var(--lindeboom--font-optical-size);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+h2 { font-size: var(--wp--preset--font-size--x-large); }
+
+p { margin: 0; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--wp--preset--color--tertiary);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--wp--preset--spacing--30);
+  top: var(--wp--preset--spacing--30);
+  background: var(--wp--preset--color--base);
+  color: var(--wp--preset--color--contrast);
+  padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--40);
+  border-radius: var(--lindeboom--radius--button);
+  z-index: 20;
+  transform: translateY(-200%);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus { transform: none; }
+
+.wrap {
+  width: min(100% - 2.5rem, 72rem);
+  margin-inline: auto;
+}
+
+.measure { max-width: 62ch; }
+
+.section-intro {
+  font-size: var(--wp--preset--font-size--medium);
+  color: var(--wp--preset--color--contrast);
+  margin-top: var(--wp--preset--spacing--40);
+}
+
+/* ---------------- Knoppen (inner blocks bij conversie) ---------------- */
+.btn {
+  display: inline-block;
+  font-family: var(--wp--preset--font-family--body);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.2;
+  text-decoration: none;
+  text-align: center;
+  min-height: 3.875rem;            /* 62px, desktopmaat; mobiel schaalt de padding mee */
+  padding: 1.0625rem 1.75rem;
+  border-radius: var(--lindeboom--radius--button);
+  transition: background-color 150ms ease;
+}
+
+.btn--primary {
+  background: var(--wp--preset--color--primary);
+  color: var(--wp--preset--color--contrast);
+}
+
+.btn--primary:hover { background: var(--wp--preset--color--primary-hover); }
+
+.btn--inverse {
+  background: var(--wp--preset--color--contrast);
+  color: var(--wp--preset--color--base);
+}
+
+.btn--inverse:hover { background: var(--wp--preset--color--contrast-dark); }
+
+/* ---------------- Header ---------------- */
+.site-header {
+  background: var(--wp--preset--color--base);
+  position: relative;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wp--preset--spacing--30);
+  min-height: 4.5rem;
+}
+
+.wordmark {
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 1.375rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.wordmark a { text-decoration: none; }
+
+.header-cta { display: none; margin-left: auto; }
+
+/* Hamburger: <details>, geen framework, optie 'collapse' (overlayMenu: mobile) */
+.nav-toggle > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 44px;      /* tikdoel */
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  font-size: var(--wp--preset--font-size--medium);
+}
+
+.nav-toggle > summary::-webkit-details-marker { display: none; }
+
+.nav-toggle .site-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  background: var(--wp--preset--color--secondary);
+  margin: 0;
+  padding: var(--wp--preset--spacing--40) 1.25rem var(--wp--preset--spacing--60);
+  list-style: none;
+  display: grid;
+  gap: var(--wp--preset--spacing--20);
+}
+
+.nav-toggle .site-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0.5rem 0.25rem;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 1.125rem;
+}
+
+.nav-toggle .site-nav a:hover { text-decoration: underline; }
+
+.nav-toggle .site-nav .nav-cta {
+  margin-top: var(--wp--preset--spacing--30);
+  justify-content: center;
+  background: var(--wp--preset--color--primary);
+  border-radius: var(--lindeboom--radius--button);
+  font-weight: 600;
+}
+
+/* ---------------- Hero: volledig uitlopende foto, tekst erover ---------------- */
+.hero {
+  position: relative;
+  min-height: min(88svh, 50rem);
+  display: grid;
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    rgba(42, 22, 8, 0.88) 0%,
+    rgba(42, 22, 8, 0.55) 55%,
+    rgba(42, 22, 8, 0.25) 100%
+  );
+}
+
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: var(--wp--preset--spacing--40);
+  padding-block: var(--wp--preset--spacing--80) var(--wp--preset--spacing--60);
+}
+
+.hero__kicker {
+  color: var(--wp--preset--color--base);
+  font-weight: 600;
+  font-size: var(--wp--preset--font-size--medium);
+}
+
+.hero h1 {
+  font-size: var(--wp--preset--font-size--xx-large);
+  font-weight: 360;
+  color: var(--wp--preset--color--base);
+  max-width: 16ch;
+}
+
+.hero__lead {
+  color: var(--wp--preset--color--base);
+  max-width: 38ch;
+  font-size: var(--wp--preset--font-size--medium);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--30);
+}
+
+.hero__caption {
+  margin-top: var(--wp--preset--spacing--40);
+  color: var(--wp--preset--color--cream-muted);
+  font-size: var(--wp--preset--font-size--small);
+}
+
+.hero :focus-visible { outline-color: var(--wp--preset--color--base); }
+
+/* ---------------- Secties ---------------- */
+.section { padding-block: var(--wp--preset--spacing--70) var(--wp--preset--spacing--80); }
+
+.section--tint { background: var(--wp--preset--color--secondary); }
+
+/* ---------------- Taarten ---------------- */
+.cakes__list {
+  list-style: none;
+  margin: var(--wp--preset--spacing--60) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--wp--preset--spacing--60);
+}
+
+.cake figure { margin: 0; }
+
+.cake img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.cake__body { margin-top: var(--wp--preset--spacing--40); }
+
+.cake h3 {
+  font-size: var(--wp--preset--font-size--large);
+  font-weight: 420;
+}
+
+.cake__desc {
+  margin-top: var(--wp--preset--spacing--20);
+  max-width: 36ch;
+}
+
+.cake__meta {
+  margin-top: var(--wp--preset--spacing--30);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--wp--preset--spacing--30);
+  font-weight: 600;
+}
+
+.cake__price { color: var(--wp--preset--color--tertiary); }
+
+.cake__order {
+  font-weight: 600;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.cake__order:hover { color: var(--wp--preset--color--tertiary); }
+
+.cakes__note {
+  margin-top: var(--wp--preset--spacing--60);
+  color: var(--wp--preset--color--ink-muted);
+  font-size: var(--wp--preset--font-size--small);
+  max-width: 48ch;
+}
+
+/* ---------------- Workshop ---------------- */
+.workshop__grid {
+  display: grid;
+  gap: var(--wp--preset--spacing--60);
+  margin-top: var(--wp--preset--spacing--60);
+}
+
+.workshop figure { margin: 0; }
+
+.workshop img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.workshop figcaption,
+.about figcaption,
+.contact__figure figcaption {
+  margin-top: var(--wp--preset--spacing--20);
+  color: var(--wp--preset--color--ink-muted);
+  font-size: var(--wp--preset--font-size--small);
+}
+
+.facts {
+  margin: var(--wp--preset--spacing--40) 0 0;
+  display: grid;
+  gap: var(--wp--preset--spacing--30);
+}
+
+.facts div {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.facts dt { font-weight: 600; }
+
+.facts dd {
+  margin: 0;
+  color: var(--wp--preset--color--ink-muted);
+}
+
+.workshop .btn { margin-top: var(--wp--preset--spacing--50); align-self: start; }
+
+/* ---------------- Over ons ---------------- */
+.about__grid {
+  display: grid;
+  gap: var(--wp--preset--spacing--60);
+  align-items: center;
+  margin-top: var(--wp--preset--spacing--60);
+}
+
+.about figure { margin: 0; }
+
+.about img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.about__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--30);
+}
+
+/* ---------------- Bestelformulier: donkerbruin vlak, focus op de hoofdaankoops ---------------- */
+.order { background: var(--wp--preset--color--contrast); color: var(--wp--preset--color--base); }
+
+.order h2, .order .section-intro { color: var(--wp--preset--color--base); }
+
+.order .section-intro { max-width: 52ch; }
+
+.order__link { color: var(--wp--preset--color--base); font-weight: 600; }
+
+.order form {
+  margin-top: var(--wp--preset--spacing--60);
+  display: grid;
+  gap: var(--wp--preset--spacing--50);
+}
+
+.field { display: grid; gap: 0.5rem; }
+
+.field label { font-weight: 600; }
+
+.field .hint {
+  color: var(--wp--preset--color--cream-muted);
+  font-size: var(--wp--preset--font-size--small);
+}
+
+.field input,
+.field select,
+.field textarea {
+  font: inherit;
+  color: var(--wp--preset--color--contrast);
+  background: var(--wp--preset--color--field);
+  border: 0;
+  border-radius: var(--lindeboom--radius--button);
+  padding: 0.9375rem 1.125rem;
+  width: 100%;
+}
+
+.field textarea { min-height: 8rem; resize: vertical; }
+
+.order .btn { justify-self: start; }
+
+.order__response {
+  margin-top: var(--wp--preset--spacing--30);
+  font-size: var(--wp--preset--font-size--small);
+  color: var(--wp--preset--color--cream-muted);
+  max-width: 46ch;
+}
+
+.order :focus-visible { outline-color: var(--wp--preset--color--base); }
+
+/* ---------------- Contact ---------------- */
+.contact__grid {
+  display: grid;
+  gap: var(--wp--preset--spacing--60);
+  margin-top: var(--wp--preset--spacing--60);
+}
+
+.contact__figure { margin: 0; }
+
+.contact__figure img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: 50% 18%;  /* uitgesneden op het bord en de verlichte keuken */
+}
+
+.contact__details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp--preset--spacing--40);
+}
+
+.visiting {
+  margin: 0;
+  font-style: normal;
+  display: grid;
+  gap: var(--wp--preset--spacing--30);
+}
+
+.visiting a { text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.visiting a:hover { color: var(--wp--preset--color--tertiary); }
+
+/* ---------------- Voettekst ---------------- */
+.site-footer {
+  background: var(--wp--preset--color--primary);
+  padding-block: var(--wp--preset--spacing--70) var(--wp--preset--spacing--40);
+}
+
+.footer-grid {
+  display: grid;
+  gap: var(--wp--preset--spacing--50);
+}
+
+.site-footer h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin-bottom: var(--wp--preset--spacing--30);
+}
+
+.site-footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.625rem; }
+
+.site-footer a { text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.site-footer a:hover { color: var(--wp--preset--color--tertiary); }
+
+.footer-brand .wordmark a { font-size: 1.5rem; color: var(--wp--preset--color--contrast); }
+
+.footer-note {
+  margin-top: var(--wp--preset--spacing--30);
+  color: var(--wp--preset--color--ink-muted);
+  max-width: 26ch;
+}
+
+.hours { display: grid; gap: 0.625rem; margin: 0; }
+.hours div { display: grid; gap: 0.125rem; }
+.hours dt { font-weight: 600; }
+.hours dd { margin: 0; color: var(--wp--preset--color--ink-muted); }
+
+.legal {
+  margin-top: var(--wp--preset--spacing--70);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wp--preset--spacing--30);
+  justify-content: space-between;
+  color: var(--wp--preset--color--ink-muted);
+  font-size: var(--wp--preset--font-size--small);
+}
+
+/* ---------------- Boven 640px: kaarten en tekstkolommen ---------------- */
+@media (min-width: 40rem) {
+  .header-cta { display: inline-block; }
+
+  .cakes__list { grid-template-columns: repeat(2, 1fr); gap: var(--wp--preset--spacing--60); }
+
+  .order form { grid-template-columns: repeat(2, 1fr); }
+  .order .field--wide { grid-column: 1 / -1; }
+  .order .btn, .order .order__response { grid-column: 1 / -1; }
+}
+
+/* ---------------- Boven 1024px: navigatie inline, hamburger weg ---------------- */
+@media (min-width: 64rem) {
+  .header-cta { display: inline-block; }
+
+  .header-inner > .nav-toggle { order: 1; margin-left: auto; }
+  .header-inner > .header-cta { order: 2; margin-left: 0; }
+
+  .nav-toggle > summary { display: none; }
+
+  .nav-toggle .site-nav {
+    position: static;
+    background: transparent;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+  }
+
+  .nav-toggle .site-nav a {
+    min-height: 0;
+    padding: 0;
+    font-size: var(--wp--preset--font-size--medium);
+    font-weight: 500;
+  }
+
+  .nav-toggle .site-nav .nav-cta { display: none; }
+
+  .workshop__grid,
+  .about__grid,
+  .contact__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--wp--preset--spacing--70);
+    align-items: center;
+  }
+
+  .footer-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+
+  .section { padding-block: var(--wp--preset--spacing--80) 7rem; }
+
+  .hero__content { padding-block: 7rem var(--wp--preset--spacing--70); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; }
+}
+</style>
+</head>
+
+<body id="top">
+
+<a class="skip-link" href="#main">Direct naar de inhoud</a>
+
+<!-- ===== Header (blokpatroon: site-header, navigatievorm: collapse → overlayMenu "mobile") ===== -->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <p class="wordmark"><a href="#top">Bakkerij Lindeboom</a></p>
+    <!-- CTA eerst in de bron, navigatie laatste: hamburger staat op telefoons rechts -->
+    <a class="btn btn--primary header-cta" href="#bestellen">Bestel een taart</a>
+    <details class="nav-toggle">
+      <summary>
+        <svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true" focusable="false">
+          <path d="M1 1h20M1 8h20M1 15h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Menu</span>
+      </summary>
+      <nav class="site-nav" aria-label="Hoofdmenu">
+        <a href="#taarten">Taarten</a>
+        <a href="#werkshop">Workshop</a>
+        <a href="#over-ons">Over ons</a>
+        <a href="#contact">Contact</a>
+        <a class="nav-cta" href="#bestellen">Bestel een taart</a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ===== Hero (blokpatroon: cover met volledig uitlopende foto en tekst erover) ===== -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__media">
+      <img
+        src="images/tabitha-turner-Ns2aJ5OXKds-unsplash.jpg"
+        width="1600" height="1200"
+        alt="Croissants en pains au chocolat op een houten plank, met een deegroller, garde, eieren, boter en chocolade, van boven gefotografeerd"
+        fetchpriority="high" decoding="async">
+    </div>
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="wrap hero__content">
+      <p class="hero__kicker">Familiebakkerij in Utrecht — sinds 1987</p>
+      <h1 id="hero-title">Elke ochtend vers, al bijna veertig jaar.</h1>
+      <p class="hero__lead">Brood, taarten en gebak, gebakken door twaalf mensen die je bij naam kennen.</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#bestellen">Bestel een taart</a>
+        <a class="btn btn--inverse" href="#contact">Kom langs in de winkel</a>
+      </div>
+      <p class="hero__caption">Croissants en pains au chocolat</p>
+    </div>
+  </section>
+
+  <!-- ===== Taarten (blokpatroon: productenraster, kaarten als groep + afbeelding + kop + alinea's) ===== -->
+  <section class="section" id="taarten" aria-labelledby="taarten-title">
+    <div class="wrap">
+      <h2 id="taarten-title">Onze taarten</h2>
+      <p class="section-intro measure">We bakken ze zelf, met boter in plaats van margarine. Bestel ze minimaal twee dagen vooruit; voor verse vruchtjes reken je drie dagen.</p>
+
+      <ul class="cakes__list">
+        <li class="cake">
+          <figure>
+            <img
+              src="images/katie-rosario-QNyRp21hb5I-unsplash.jpg"
+              width="1600" height="2133"
+              alt="Roze driptaart met een ijseshoorntje bovenop en een gesneden punt ernaast"
+              loading="lazy" decoding="async">
+            <figcaption class="cake__body">
+              <h3>Feestdriptaart</h3>
+              <p class="cake__desc">Luchtige vanillecake met botercrème onder een roze chocoladedrup. Voor 8 tot 12 personen.</p>
+              <p class="cake__meta">
+                <span class="cake__price">vanaf € 39,50</span>
+                <a class="cake__order" href="#bestellen">Bestel deze taart</a>
+              </p>
+            </figcaption>
+          </figure>
+        </li>
+        <li class="cake">
+          <figure>
+            <img
+              src="images/heather-barnes-WbZesfqwR-A-unsplash.jpg"
+              width="1600" height="2024"
+              alt="Gestapelde macarons in roze, lila en groen"
+              loading="lazy" decoding="async">
+            <figcaption class="cake__body">
+              <h3>Macarons</h3>
+              <p class="cake__desc">Elke week nieuwe smaken uit de winkel; deze week citroen, framboos en pistache.</p>
+              <p class="cake__meta">
+                <span class="cake__price">per 6 € 12,50</span>
+                <a class="cake__order" href="#bestellen">Bestel deze taart</a>
+              </p>
+            </figcaption>
+          </figure>
+        </li>
+        <li class="cake">
+          <figure>
+            <img
+              src="images/deva-williamson-S2jw81lfrG0-unsplash.jpg"
+              width="1600" height="2400"
+              alt="Cupcakes met roze frosting en verse aardbeien, met een gouden vork"
+              loading="lazy" decoding="async">
+            <figcaption class="cake__body">
+              <h3>Aardbeiencupcakes</h3>
+              <p class="cake__desc">Zachte vanillecake met aardbeienbotercrème en een verse aardbei erbovenop.</p>
+              <p class="cake__meta">
+                <span class="cake__price">per 6 € 15,00</span>
+                <a class="cake__order" href="#bestellen">Bestel deze taart</a>
+              </p>
+            </figcaption>
+          </figure>
+        </li>
+        <li class="cake">
+          <figure>
+            <img
+              src="images/mockup-graphics-OdE9bKLNhQs-unsplash.jpg"
+              width="1600" height="1600"
+              alt="Gesneden punt aardbeientaart op een witte ondergrond"
+              loading="lazy" decoding="async">
+            <figcaption class="cake__body">
+              <h3>Aardbeientaart</h3>
+              <p class="cake__desc">Krokante boterbodem met vanillecrème, slagroom en verse aardbeien van de week.</p>
+              <p class="cake__meta">
+                <span class="cake__price">vanaf € 32,00</span>
+                <a class="cake__order" href="#bestellen">Bestel deze taart</a>
+              </p>
+            </figcaption>
+          </figure>
+        </li>
+      </ul>
+
+      <p class="cakes__note">Grotere taarten of een eigen ontwerp? Schrijf het in het bericht bij je bestelling; we bellen je erover mee.</p>
+    </div>
+  </section>
+
+  <!-- ===== Workshop (blokpatroon: tweekolomsband met foto en feitenlijst) ===== -->
+  <section class="section section--tint" id="werkshop" aria-labelledby="werkshop-title">
+    <div class="wrap workshop__grid">
+      <figure>
+        <img
+          src="images/nadya-spetnitskaya-tOYiQxF9-Ys-unsplash.jpg"
+          width="1600" height="1066"
+          alt="Handen die deeg kneden op een met bloem bestoven werkblad, met een deegroller erachter"
+          loading="lazy" decoding="async">
+        <figcaption>Handen in het deeg</figcaption>
+      </figure>
+      <div>
+        <h2 id="werkshop-title">Bakworkshop op zaterdag</h2>
+        <p class="section-intro measure">Eens per maand kneden we samen met maximaal tien gasten een deeg tot brood. Je gaat naar huis met je eigen desembrood en het recept erbij.</p>
+        <dl class="facts">
+          <div>
+            <dt>Wanneer</dt>
+            <dd>Eerste zaterdag van de maand, 09.30 – 13.00 uur</dd>
+          </div>
+          <div>
+            <dt>Groep</dt>
+            <dd>Maximaal 10 deelnemers, vanaf 12 jaar</dd>
+          </div>
+          <div>
+            <dt>Prijs</dt>
+            <dd>€ 45 per persoon, inclusief koffie, lunch en brood</dd>
+          </div>
+        </dl>
+        <a class="btn btn--primary" href="#bestellen">Vraag naar de eerstvolgende datum</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Over ons (blokpatroon: tweekolomssectie met foto en lopende tekst) ===== -->
+  <section class="section" id="over-ons" aria-labelledby="over-ons-title">
+    <div class="wrap about__grid">
+      <figure class="about">
+        <img
+          src="images/alan-aprilio-FJyjcrEBsMo-unsplash.jpg"
+          width="1600" height="1600"
+          alt="Desembrood met een gekartelde snee op een houten plank"
+          loading="lazy" decoding="async">
+        <figcaption>Desembrood</figcaption>
+      </figure>
+      <div class="about__text">
+        <h2 id="over-ons-title">Over Lindeboom</h2>
+        <p class="measure">In 1987 stak Wim Lindeboom de eerste oven aan, op de hoek van de Nachtegaalstraat. Nu staat er elke ochtend om vier uur al een team van twaalf mensen te bakken: dochters, kleinkinderen en een paar buurtgenoten.</p>
+        <p class="measure">Ons desembrood rijst twee dagen op eigen gisting, en wat om vier uur uit de oven komt, is om zes uur in de kast. Daarna rijden we brood en gebak langs de kantines en kantoren in Utrecht-Oost.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Bestellen (blokpatroon: donkere band met formulier — Contact Form 7 bij conversie) ===== -->
+  <section class="section order" id="bestellen" aria-labelledby="bestellen-title">
+    <div class="wrap">
+      <h2 id="bestellen-title">Bestel een taart</h2>
+      <p class="section-intro">Vul het formulier in en je hoort binnen één werkdag van ons. Liever direct praten? Bel <a class="order__link" href="tel:+31302518240">030 251 82 40</a>.</p>
+
+      <form action="#" method="post">
+        <div class="field field--wide">
+          <label for="naam">Je naam</label>
+          <input id="naam" name="naam" type="text" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="email">Je e-mailadres</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="datum">Gewenste datum</label>
+          <p class="hint">Bestel minimaal twee dagen vooruit.</p>
+          <input id="datum" name="datum" type="date" required>
+        </div>
+        <div class="field field--wide">
+          <label for="taart">Welke taart wil je?</label>
+          <select id="taart" name="taart" required>
+            <option value="" selected disabled>Kies een taart</option>
+            <option value="feestdriptaart">Feestdriptaart — vanaf € 39,50</option>
+            <option value="macarons">Macarons — per 6 € 12,50</option>
+            <option value="aardbeiencupcakes">Aardbeiencupcakes — per 6 € 15,00</option>
+            <option value="aardbeientaart">Aardbeientaart — vanaf € 32,00</option>
+            <option value="anders">Anders, of ik twijfel nog</option>
+          </select>
+        </div>
+        <div class="field field--wide">
+          <label for="bericht">Bericht of wensen</label>
+          <p class="hint">Vul bijvoorbeeld het aantal personen of een allergie in.</p>
+          <textarea id="bericht" name="bericht"></textarea>
+        </div>
+        <button class="btn btn--primary" type="submit">Bestel een taart</button>
+        <p class="order__response">Je krijgt een bevestiging van ons op e-mail, en bij spoed bellen we je liever even.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Contact (blokpatroon: winkelfoto uitgesneden op het bord en de keuken + adresgegevens) ===== -->
+  <section class="section" id="contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <h2 id="contact-title">Kom langs in de winkel</h2>
+      <div class="contact__grid">
+        <figure class="contact__figure">
+          <img
+            src="images/do-nhu--CC1HQ0O8YY-unsplash.jpg"
+            width="1600" height="1600"
+            alt="Winkelgevel met patisseriebord bij avond, met daaronder de verlichte keuken waar gebakken wordt"
+            loading="lazy" decoding="async">
+          <figcaption>Onze winkel, 's avonds voor het sluiten</figcaption>
+        </figure>
+        <div class="contact__details">
+          <address class="visiting">
+            <span>Nachtegaalstraat 41<br>3581 AC Utrecht</span>
+            <a href="tel:+31302518240">030 251 82 40</a>
+            <a href="mailto:hallo@bakkerijlindeboom.nl">hallo@bakkerijlindeboom.nl</a>
+            <a href="https://maps.google.com/?q=Nachtegaalstraat+41,+Utrecht">Route plannen</a>
+          </address>
+          <dl class="hours">
+            <div>
+              <dt>Dinsdag t/m vrijdag</dt>
+              <dd>07.00 – 18.00</dd>
+            </div>
+            <div>
+              <dt>Zaterdag</dt>
+              <dd>07.00 – 17.00</dd>
+            </div>
+            <div>
+              <dt>Zondag en maandag</dt>
+              <dd>gesloten</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== Voettekst (blokpatroon: footer met navigatie "overlayMenu: never") ===== -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <p class="wordmark"><a href="#top">Bakkerij Lindeboom</a></p>
+        <p class="footer-note">Familiebakkerij in Utrecht-Oost. Elke ochtend vers, al sinds 1987.</p>
+      </div>
+      <nav aria-label="Voettekstmenu">
+        <h3>Menu</h3>
+        <ul>
+          <li><a href="#taarten">Taarten</a></li>
+          <li><a href="#werkshop">Workshop</a></li>
+          <li><a href="#over-ons">Over ons</a></li>
+          <li><a href="#bestellen">Bestellen</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h3>Openingstijden</h3>
+        <dl class="hours">
+          <div>
+            <dt>Dinsdag t/m vrijdag</dt>
+            <dd>07.00 – 18.00</dd>
+          </div>
+          <div>
+            <dt>Zaterdag</dt>
+            <dd>07.00 – 17.00</dd>
+          </div>
+          <div>
+            <dt>Zondag en maandag</dt>
+            <dd>gesloten</dd>
+          </div>
+        </dl>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li>Nachtegaalstraat 41, Utrecht</li>
+          <li><a href="tel:+31302518240">030 251 82 40</a></li>
+          <li><a href="mailto:hallo@bakkerijlindeboom.nl">hallo@bakkerijlindeboom.nl</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <p>© 2026 Bakkerij Lindeboom</p>
+      <p>Foto's van Unsplash, makers in <a href="images/CREDITS.md">images/CREDITS.md</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Houdt het <details>-menu open op desktop; valt weg bij conversie naar core/navigation. */
+var mq = matchMedia('(min-width: 64rem)'), d = document.querySelector('.nav-toggle');
+var sync = function () { d.open = mq.matches; };
+sync(); mq.addEventListener('change', sync);
+</script>
+
+</body>
+</html>
