@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <!-- ===== Hero: core/cover met volledig uitlopende foto en tekst erover (gap: geen aludra-blok heeft een full-bleed foto) ===== -->
 <!-- wp:cover {"url":"<?php echo esc_url( get_theme_file_uri( 'assets/img/tabitha-turner-Ns2aJ5OXKds-unsplash.jpg' ) ); ?>","alt":"Croissants en pains au chocolat op een houten plank, met een deegroller, garde, eieren, boter en chocolade, van boven gefotografeerd","dimRatio":0,"minHeight":70,"minHeightUnit":"vh","align":"full","className":"lindeboom-hero","anchor":"hero"} -->
-<div class="wp-block-cover alignfull is-light lindeboom-hero" style="min-height:70vh" id="hero">
+<div class="wp-block-cover alignfull lindeboom-hero" style="min-height:70vh" id="hero">
 <img class="wp-block-cover__image-background" alt="Croissants en pains au chocolat op een houten plank, met een deegroller, garde, eieren, boter en chocolade, van boven gefotografeerd" src="<?php echo esc_url( get_theme_file_uri( 'assets/img/tabitha-turner-Ns2aJ5OXKds-unsplash.jpg' ) ); ?>" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-background-dim-0 has-background-dim"></span>
 <div class="wp-block-cover__inner-container">
 <!-- wp:paragraph {"className":"lindeboom-hero__kicker","textColor":"base"} -->
@@ -146,15 +146,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:aludra/feature-cards -->
 
 <!-- ===== Workshop: aludra/split-section + aludra/service-blocks (gekopieerd uit section-split.php) ===== -->
-<!-- wp:aludra/split-section {"label":"","heading":"Bakworkshop op zaterdag","lead":"Eens per maand kneden we samen met maximaal tien gasten een deeg tot brood. Je gaat naar huis met je eigen desembrood en het recept erbij.","mediaWidth":46,"tint":true,"anchor":"werkshop"} -->
-<div class="wp-block-aludra-split-section alignfull is-tinted" id="werkshop" style="margin-top:0;margin-bottom:0"><div class="split-section__shell"><div class="split-section__header"><p class="split-section__label"></p><h2 class="split-section__heading">Bakworkshop op zaterdag</h2><p class="split-section__lead">Eens per maand kneden we samen met maximaal tien gasten een deeg tot brood. Je gaat naar huis met je eigen desembrood en het recept erbij.</p></div><div class="split-section__panes" style="--aludra-split-media:46%"><!-- wp:group {"className":"split-section__media"} -->
+<!-- wp:aludra/split-section {"label":"","heading":"","lead":"","mediaWidth":46,"tint":true,"anchor":"werkshop"} -->
+<div class="wp-block-aludra-split-section alignfull is-tinted" id="werkshop" style="margin-top:0;margin-bottom:0"><div class="split-section__shell"><div class="split-section__header"><p class="split-section__label"></p><h2 class="split-section__heading"></h2><p class="split-section__lead"></p></div><div class="split-section__panes" style="--aludra-split-media:46%"><!-- wp:group {"className":"split-section__media"} -->
 <div class="wp-block-group split-section__media"><!-- wp:image {"sizeSlug":"full","className":"lindeboom-workshop__foto"} -->
 <figure class="wp-block-image size-full lindeboom-workshop__foto"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/nadya-spetnitskaya-tOYiQxF9-Ys-unsplash.jpg' ) ); ?>" alt="Handen die deeg kneden op een met bloem bestoven werkblad, met een deegroller erachter"/><figcaption class="wp-element-caption">Handen in het deeg</figcaption></figure>
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"split-section__content"} -->
-<div class="wp-block-group split-section__content"><!-- wp:aludra/service-blocks -->
+<div class="wp-block-group split-section__content"><!-- wp:heading {"level":2,"className":"lindeboom-workshop__title"} -->
+<h2 class="wp-block-heading lindeboom-workshop__title">Bakworkshop op zaterdag</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"className":"lindeboom-workshop__intro"} -->
+<p class="lindeboom-workshop__intro">Eens per maand kneden we samen met maximaal tien gasten een deeg tot brood. Je gaat naar huis met je eigen desembrood en het recept erbij.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:aludra/service-blocks -->
 <div class="wp-block-aludra-service-blocks alignwide" style="margin-top:0;margin-bottom:0"><div class="service-blocks__inner"><!-- wp:group {"className":"service-blocks__list"} -->
 <div class="wp-block-group service-blocks__list"><!-- wp:group {"className":"service-block"} -->
 <div class="wp-block-group service-block"><!-- wp:group {"className":"service-block__header"} -->
@@ -162,9 +170,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p class="service-block__num">01</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":3,"className":"service-block__title"} -->
-<h3 class="wp-block-heading service-block__title">Wanneer</h3>
-<!-- /wp:heading --></div>
+<!-- wp:paragraph {"className":"service-block__title"} -->
+<p class="service-block__title">Wanneer</p>
+<!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"service-block__body"} -->
@@ -180,9 +188,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p class="service-block__num">02</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":3,"className":"service-block__title"} -->
-<h3 class="wp-block-heading service-block__title">Groep</h3>
-<!-- /wp:heading --></div>
+<!-- wp:paragraph {"className":"service-block__title"} -->
+<p class="service-block__title">Groep</p>
+<!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"service-block__body"} -->
@@ -198,9 +206,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p class="service-block__num">03</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"level":3,"className":"service-block__title"} -->
-<h3 class="wp-block-heading service-block__title">Prijs</h3>
-<!-- /wp:heading --></div>
+<!-- wp:paragraph {"className":"service-block__title"} -->
+<p class="service-block__title">Prijs</p>
+<!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"service-block__body"} -->
@@ -226,7 +234,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 <figure class="wp-block-image size-full lindeboom-about__foto"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/alan-aprilio-FJyjcrEBsMo-unsplash.jpg' ) ); ?>" alt="Desembrood met een gekartelde snee op een houten plank" style="aspect-ratio:4/3;object-fit:cover"/><figcaption class="wp-element-caption">Desembrood</figcaption></figure>
 <!-- /wp:image -->
 
-<!-- wp:heading {"level":2,"className":"about-section__title"} -->
+<!-- wp:group {"className":"lindeboom-about__text","layout":{"type":"flex","orientation":"vertical"}} -->
+<div class="wp-block-group lindeboom-about__text"><!-- wp:heading {"level":2,"className":"about-section__title"} -->
 <h2 class="wp-block-heading about-section__title">Over Lindeboom</h2>
 <!-- /wp:heading -->
 
@@ -236,7 +245,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <!-- wp:paragraph {"className":"about-section__closing"} -->
 <p class="about-section__closing">Ons desembrood rijst twee dagen op eigen gisting, en wat om vier uur uit de oven komt, is om zes uur in de kast. Daarna rijden we brood en gebak langs de kantines en kantoren in Utrecht-Oost.</p>
-<!-- /wp:paragraph --></div></div>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div></div>
 <!-- /wp:aludra/about -->
 
 <!-- ===== Bestellen: aludra/contact-section (gekopieerd uit section-contact.php; formulier = Contact Form 7) ===== -->
@@ -251,79 +261,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"contact-section__grid","layout":{"type":"flex","orientation":"horizontal","flexWrap":"nowrap","verticalAlignment":"top"}} -->
-<div class="wp-block-group contact-section__grid"><!-- wp:group {"className":"contact-section__info","style":{"spacing":{"blockGap":"16px"}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group contact-section__info"><!-- wp:heading {"level":3,"className":"contact-section__info-heading"} -->
-<h3 class="wp-block-heading contact-section__info-heading">Liever even persoonlijk?</h3>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph {"className":"contact-section__info-text"} -->
-<p class="contact-section__info-text">Bel of mail ons; we denken graag mee over je bestelling.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:group {"className":"contact-section__details","style":{"spacing":{"blockGap":"20px"}},"layout":{"type":"flex","orientation":"vertical"}} -->
-<div class="wp-block-group contact-section__details"><!-- wp:group {"className":"cs-detail","layout":{"type":"flex","orientation":"horizontal","flexWrap":"nowrap","verticalAlignment":"top"}} -->
-<div class="wp-block-group cs-detail"><!-- wp:group {"className":"cs-detail__icon","layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
-<div class="wp-block-group cs-detail__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-chat.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="Telefoon"/></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"cs-detail__body","style":{"spacing":{"blockGap":"4px"}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group cs-detail__body"><!-- wp:paragraph {"className":"cs-detail__label"} -->
-<p class="cs-detail__label">Telefoon</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph {"className":"cs-detail__value"} -->
-<p class="cs-detail__value"><a href="tel:+31302518240">030 251 82 40</a></p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"cs-detail","layout":{"type":"flex","orientation":"horizontal","flexWrap":"nowrap","verticalAlignment":"top"}} -->
-<div class="wp-block-group cs-detail"><!-- wp:group {"className":"cs-detail__icon","layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
-<div class="wp-block-group cs-detail__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-mail.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="E-mail"/></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"cs-detail__body","style":{"spacing":{"blockGap":"4px"}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group cs-detail__body"><!-- wp:paragraph {"className":"cs-detail__label"} -->
-<p class="cs-detail__label">E-mail</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph {"className":"cs-detail__value"} -->
-<p class="cs-detail__value"><a href="mailto:hallo@bakkerijlindeboom.nl">hallo@bakkerijlindeboom.nl</a></p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"cs-detail","layout":{"type":"flex","orientation":"horizontal","flexWrap":"nowrap","verticalAlignment":"top"}} -->
-<div class="wp-block-group cs-detail"><!-- wp:group {"className":"cs-detail__icon","layout":{"type":"flex","justifyContent":"center","verticalAlignment":"center"}} -->
-<div class="wp-block-group cs-detail__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-map.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="Adres"/></figure>
-<!-- /wp:image --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"cs-detail__body","style":{"spacing":{"blockGap":"4px"}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group cs-detail__body"><!-- wp:paragraph {"className":"cs-detail__label"} -->
-<p class="cs-detail__label">Adres</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph {"className":"cs-detail__value"} -->
-<p class="cs-detail__value">Nachtegaalstraat 41, 3581 AC Utrecht</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group -->
-
-<!-- wp:group {"className":"cs-badge","layout":{"type":"flex","orientation":"horizontal","flexWrap":"nowrap","verticalAlignment":"center"}} -->
-<div class="wp-block-group cs-badge"><!-- wp:paragraph {"className":"cs-badge__text"} -->
-<p class="cs-badge__text">Bestel minimaal twee dagen vooruit</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group --></div>
-<!-- /wp:group -->
-
 <!-- wp:group {"className":"contact-section__card","layout":{"type":"constrained"}} -->
 <div class="wp-block-group contact-section__card"><!-- wp:shortcode -->
 [contact-form-7 id="6" title="Bestel een taart"]
@@ -332,7 +269,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- wp:paragraph {"className":"lindeboom-order__response","fontSize":"small"} -->
 <p class="lindeboom-order__response has-small-font-size">Je krijgt een bevestiging van ons op e-mail, en bij spoed bellen we je liever even.</p>
 <!-- /wp:paragraph --></div>
-<!-- /wp:group --></div>
 <!-- /wp:group --></div></div>
 <!-- /wp:aludra/contact-section -->
 
@@ -349,8 +285,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- wp:group {"className":"icon-grid__grid"} -->
 <div class="wp-block-group icon-grid__grid"><!-- wp:group {"className":"icon-grid__item"} -->
 <div class="wp-block-group icon-grid__item"><!-- wp:group {"className":"icon-grid__icon"} -->
-<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-map.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="Adres"/></figure>
+<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/icons/icon-map.svg' ) ); ?>" alt="Adres"/></figure>
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 
@@ -361,8 +297,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <!-- wp:group {"className":"icon-grid__item"} -->
 <div class="wp-block-group icon-grid__item"><!-- wp:group {"className":"icon-grid__icon"} -->
-<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-chat.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="Telefoon"/></figure>
+<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/icons/icon-chat.svg' ) ); ?>" alt="Telefoon"/></figure>
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 
@@ -373,8 +309,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <!-- wp:group {"className":"icon-grid__item"} -->
 <div class="wp-block-group icon-grid__item"><!-- wp:group {"className":"icon-grid__icon"} -->
-<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-mail.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="E-mail"/></figure>
+<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/icons/icon-mail.svg' ) ); ?>" alt="E-mail"/></figure>
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 
@@ -385,8 +321,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <!-- wp:group {"className":"icon-grid__item"} -->
 <div class="wp-block-group icon-grid__item"><!-- wp:group {"className":"icon-grid__icon"} -->
-<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-link.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="Route"/></figure>
+<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/icons/icon-link.svg' ) ); ?>" alt="Route"/></figure>
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 
@@ -397,8 +333,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <!-- wp:group {"className":"icon-grid__item"} -->
 <div class="wp-block-group icon-grid__item"><!-- wp:group {"className":"icon-grid__icon"} -->
-<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-clock.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="Openingstijden"/></figure>
+<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/icons/icon-clock.svg' ) ); ?>" alt="Openingstijden"/></figure>
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 
@@ -409,8 +345,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <!-- wp:group {"className":"icon-grid__item"} -->
 <div class="wp-block-group icon-grid__item"><!-- wp:group {"className":"icon-grid__icon"} -->
-<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-clock.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="Openingstijden"/></figure>
+<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/icons/icon-clock.svg' ) ); ?>" alt="Openingstijden"/></figure>
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 
@@ -421,8 +357,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <!-- wp:group {"className":"icon-grid__item"} -->
 <div class="wp-block-group icon-grid__item"><!-- wp:group {"className":"icon-grid__icon"} -->
-<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none","metadata":{"bindings":{"url":{"source":"aludra/icon","args":{"path":"icon-clock.svg"}}}}} -->
-<figure class="wp-block-image size-full"><img src="" alt="Openingstijden"/></figure>
+<div class="wp-block-group icon-grid__icon"><!-- wp:image {"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/icons/icon-clock.svg' ) ); ?>" alt="Openingstijden"/></figure>
 <!-- /wp:image --></div>
 <!-- /wp:group -->
 

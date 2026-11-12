@@ -1321,16 +1321,22 @@ a {
 	left: 0;
 	right: 0;
 	top: 0;
-	z-index: 1; /* above the background image (z 0), below the inner container (z 1, later in DOM) */
+	z-index: 1; /* above the background image, below the inner container (z 2) */
 }
 
 /* Hero (source .hero__content): the cover's inner container is a centered
- * constrained column already; it only needs the end-alignment padding. */
+ * constrained column already; it only needs the end-alignment padding. Core
+ * gives the container `position: relative` but no z-index, so without z 2 the
+ * scrim (z 1) paints over the text; the cream colour comes from the source's
+ * .hero text, which the removed is-light class used to override. */
 .lindeboom-hero .wp-block-cover__inner-container {
+	color: var(--wp--preset--color--base);
 	display: flex;
 	flex-direction: column;
 	gap: var(--wp--preset--spacing--40);
 	padding-block: 6rem var(--wp--preset--spacing--60);
+	position: relative;
+	z-index: 2;
 }
 
 .lindeboom-hero .wp-block-heading {
@@ -1506,6 +1512,32 @@ a {
 	display: none;
 }
 
+/* Workshop (source .workshop h2 + .section-intro): heading and intro sit in
+ * the right column beside the photo, not in the block's centred header. */
+.lindeboom-workshop__title {
+	color: var(--wp--preset--color--contrast);
+	font-size: var(--wp--preset--font-size--x-large);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.08;
+	margin: 0 !important;
+}
+
+.lindeboom-workshop__intro {
+	color: var(--wp--preset--color--contrast);
+	font-size: var(--wp--preset--font-size--medium);
+	margin: var(--wp--preset--spacing--40) 0 0 !important;
+	max-width: 62ch;
+}
+
+.wp-block-aludra-split-section .split-section__content > .wp-block-aludra-service-blocks {
+	margin-block-start: var(--wp--preset--spacing--40) !important;
+}
+
+.wp-block-aludra-split-section .split-section__content > .wp-block-buttons {
+	margin-block-start: var(--wp--preset--spacing--50) !important;
+}
+
 /* Workshop (source .workshop figure): photo in a 16/10 crop with a small
  * muted caption; core/image has no aspect ratio attribute for 16/10. */
 .lindeboom-workshop__foto img {
@@ -1534,7 +1566,8 @@ a {
 }
 
 /* Workshop (source .facts dt/dd): the block prints big italic index numerals
- * and 14.5px muted copy; the source has weight-600 terms and muted values. */
+ * and 14.5px muted copy; the source has small weight-600 labels (dt) and
+ * muted values (dd). The titles are paragraphs now, so no heading size. */
 .wp-block-aludra-split-section .service-block__num {
 	display: none;
 }
@@ -1542,9 +1575,10 @@ a {
 .wp-block-aludra-split-section .service-block__title {
 	color: var(--wp--preset--color--contrast) !important;
 	font-family: var(--wp--preset--font-family--body) !important;
-	font-size: var(--wp--preset--font-size--large) !important;
+	font-size: var(--wp--preset--font-size--medium) !important;
 	font-weight: 600 !important;
 	line-height: 1.55 !important;
+	margin: 0 !important;
 }
 
 .wp-block-aludra-split-section .service-block__body {
@@ -1595,6 +1629,14 @@ a {
 	}
 }
 
+/* Over ons (source .about__text): heading and both paragraphs stack in the
+ * right-hand grid column, beside the photo. */
+.lindeboom-about__text {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--30);
+}
+
 .wp-block-aludra-about .lindeboom-about__foto {
 	margin: 0;
 }
@@ -1636,7 +1678,7 @@ a {
 
 .wp-block-aludra-contact-section .contact-section__intro {
 	margin-block-end: var(--wp--preset--spacing--60);
-	text-align: start;
+	text-align: start !important; /* the block centres the intro */
 }
 
 .wp-block-aludra-contact-section .contact-section__heading,
@@ -1646,53 +1688,21 @@ a {
 	font-weight: 400;
 	letter-spacing: -0.01em;
 	line-height: 1.08;
-	text-align: start;
+	text-align: start !important;
 }
 
+/* Source .order .section-intro: intro text in base, not muted. */
 .wp-block-aludra-contact-section .contact-section__sub {
-	color: var(--wp--preset--color--secondary); /* on main, ink-muted keeps 4.7:1 */
-	margin-inline: 0;
+	color: var(--wp--preset--color--base) !important;
+	margin-inline: 0 !important;
 	max-width: 52ch;
-	text-align: start;
+	text-align: start !important;
 }
 
 .wp-block-aludra-contact-section .contact-section__sub a,
 .wp-block-aludra-contact-section .contact-section__sub a:hover {
 	color: var(--wp--preset--color--base);
 	font-weight: 600;
-}
-
-/* Bestellen (source .field): visible, sentence-case labels at reading size;
- * the block ships 11px uppercase labels which WCAG-adjacent copy avoids.
- * The CF7 label wraps its field, so block labels keep the hint inline. */
-.wp-block-aludra-contact-section .contact-section__info-heading {
-	color: var(--wp--preset--color--base);
-	font-family: var(--wp--preset--font-family--display);
-	font-size: var(--wp--preset--font-size--large);
-	font-weight: 400;
-	letter-spacing: -0.01em;
-}
-
-.wp-block-aludra-contact-section .contact-section__info-text {
-	color: var(--wp--preset--color--secondary);
-	font-size: var(--wp--preset--font-size--medium);
-	margin-block-end: var(--wp--preset--spacing--50);
-}
-
-/* Bestellen: the badge repurposed as the source's order note, with the dot
- * in bessenrood instead of the block's green availability dot. */
-.wp-block-aludra-contact-section .cs-badge::before {
-	background: var(--wp--preset--color--primary);
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--primary) 20%, transparent);
-}
-
-.wp-block-aludra-contact-section .cs-badge {
-	margin-block-start: var(--wp--preset--spacing--50);
-}
-
-.wp-block-aludra-contact-section .cs-badge__text {
-	color: var(--wp--preset--color--secondary);
-	font-size: var(--wp--preset--font-size--small);
 }
 
 /* Bestellen (source .order form): no card box, cream fill fields, no borders,
@@ -1710,15 +1720,16 @@ a {
 	row-gap: var(--wp--preset--spacing--50);
 }
 
-/* Bestellen: naam, taart and bericht wide (the block's rule widens all but the
- * first two), email en datum side by side, as in the source. */
+/* Bestellen: naam, taart, bericht, knop en notitie span the full width; e-mail
+ * en datum sit side by side, as in the source. (The block's own rule puts the
+ * first two fields in columns — the !important wins over it.) */
 .wp-block-aludra-contact-section .contact-section__card form > p {
-	grid-column: 1 / -1;
+	grid-column: 1 / -1 !important;
 }
 
-.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(1),
-.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(2) {
-	grid-column: auto;
+.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(2),
+.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(3) {
+	grid-column: auto !important;
 }
 
 @media (max-width: 39.9375rem) {
@@ -1726,9 +1737,9 @@ a {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(1),
-	.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(2) {
-		grid-column: 1 / -1;
+	.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(2),
+	.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(3) {
+		grid-column: 1 / -1 !important;
 	}
 }
 
@@ -1749,19 +1760,43 @@ a {
 	margin-block-start: 0.5rem;
 }
 
-/* Bestellen (source .field input): cream-white fill, no border, 5px radius. */
+/* Bestellen (source .field .hint): the hint sits below the label as small
+ * muted text; CF7 renders it inside the label, above the field. The date
+ * field's hint stays on the label line, so its input aligns with the e-mail
+ * input beside it. */
+.wp-block-aludra-contact-section .contact-section__card .lindeboom-hint {
+	color: var(--wp--preset--color--sand-deep);
+	display: block;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 400;
+	margin-block-start: 0.5rem;
+}
+
+.wp-block-aludra-contact-section .contact-section__card .lindeboom-hint--inline {
+	display: inline;
+	margin-block-start: 0;
+	margin-inline-start: 0.75rem;
+}
+
+/* Bestellen (source .field input): cream-white fill, no border, 5px radius,
+ * full width — including the date input, which the block's own field rule
+ * leaves at native width. */
 .wp-block-aludra-contact-section .contact-section__card input[type="text"],
 .wp-block-aludra-contact-section .contact-section__card input[type="email"],
 .wp-block-aludra-contact-section .contact-section__card input[type="tel"],
 .wp-block-aludra-contact-section .contact-section__card input[type="url"],
+.wp-block-aludra-contact-section .contact-section__card input[type="date"],
 .wp-block-aludra-contact-section .contact-section__card select,
 .wp-block-aludra-contact-section .contact-section__card textarea {
 	background: var(--wp--custom--color--field);
 	border: 0;
 	border-radius: 5px;
+	box-sizing: border-box;
 	color: var(--wp--preset--color--contrast);
+	font-family: var(--wp--preset--font-family--body);
 	font-size: var(--wp--preset--font-size--medium);
 	padding: 0.9375rem 1.125rem;
+	width: 100%;
 }
 
 .wp-block-aludra-contact-section .contact-section__card input::placeholder,
@@ -1805,12 +1840,15 @@ a {
 	transform: none;
 }
 
-/* Bestellen (source .order__response): the note under the button. */
+/* Bestellen (source .order__response): the note under the button, left-aligned
+ * with the form (the card's constrained layout would centre it). */
 .lindeboom-order__response {
 	color: var(--wp--preset--color--sand-deep);
 	font-size: var(--wp--preset--font-size--small);
 	margin-block-start: var(--wp--preset--spacing--30);
+	margin-inline: 0 !important;
 	max-width: 46ch;
+	text-align: start;
 }
 
 /* Contact (source .contact__grid): the icon-grid runs a flat two-column band
@@ -1996,6 +2034,14 @@ a {
 	flex-direction: column;
 	gap: 0.625rem;
 	justify-content: flex-start;
+}
+
+/* Footer (source .site-footer a): the menu links are small and underlined like
+ * the other footer links, not core's larger undecorated navigation links. */
+.lindeboom-footer .wp-block-navigation-item__content {
+	color: inherit;
+	font-size: var(--wp--preset--font-size--small);
+	text-decoration: underline;
 }
 
 .lindeboom-footer a {
