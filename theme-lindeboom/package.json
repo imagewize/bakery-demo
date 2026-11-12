@@ -1,0 +1,24 @@
+{
+	"name": "lindeboom",
+	"version": "1.0.0",
+	"description": "Block theme for Bakkerij Lindeboom, a family bakery in Utrecht. Fork of the Aviendha starter theme.",
+	"keywords": [
+		"WordPress",
+		"theme",
+		"block-theme",
+		"fse",
+		"starter-theme"
+	],
+	"author": "Jasper Frumau",
+	"license": "GPL-3.0-or-later",
+	"scripts": {
+		"setup": "npx playwright install chromium",
+		"validate": "sentinel --log patterns/",
+		"validate:file": "sentinel",
+		"validate:new": "sentinel --cache --log patterns/",
+		"validate:clear-cache": "sentinel --clear-cache"
+	},
+	"dependencies": {
+		"@imwz/wp-pattern-sentinel": "^1.2.2"
+	}
+}

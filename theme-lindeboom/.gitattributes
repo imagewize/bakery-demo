@@ -1,0 +1,20 @@
+/node_modules export-ignore
+/vendor export-ignore
+/bin export-ignore
+/.agents export-ignore
+/.vibe export-ignore
+
+# Guards, not descriptions: docs/ and designs/ no longer exist here. Planning
+# documents and design mockups live in the private imagewize.com repo, under
+# docs/lindeboom/ and designs/lindeboom/ (see CLAUDE.md). Kept in step with
+# .distignore so a stray file re-added here stays out of source archives too.
+/docs export-ignore
+/designs export-ignore
+/.github export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/.distignore export-ignore
+/CLAUDE.md export-ignore
+/AGENTS.md export-ignore
+/create-pr.sh export-ignore
+/phpcs.xml export-ignore
