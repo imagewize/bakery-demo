@@ -111,7 +111,8 @@ marked as a future pattern.
   gradient, then measured again.
 - **Checked by eye afterwards, outside the session:** screenshots at 375/390 and 1440px through an
   iframe at the exact width. The page is right at phone width (hamburger, wrapped headline, stacked
-  buttons) and the hero, cake and workshop photos match their credits.
+  buttons), and the hero and the first two cake photos (drip cake, macarons) match their credits;
+  the rest of the page was not looked at yet.
 
 What went wrong:
 - **No image support.** GLM-5.3 has no `supports_images = true` in `~/.vibe/config.toml`, so the
