@@ -9,7 +9,7 @@ step shows the exact command, then the prompt to paste:
 
 ```bash
 cd ~/code/bakery-demo
-vibe --agent <agent> --smart-approve
+vibe --agent <agent>
 ```
 
 | # | Step | Agent | Outcome | Commit |
@@ -62,7 +62,7 @@ not by looking. Look at the result yourself, or let stage 2 do it.
 
 ```bash
 cd ~/code/bakery-demo
-vibe --agent wp-frontend-builder --smart-approve
+vibe --agent wp-frontend-builder
 ```
 
 Then paste this prompt:
@@ -148,7 +148,7 @@ model could not see the screenshots: switch model and run it again. If it calls 
 
 ```bash
 cd ~/code/bakery-demo
-vibe --agent ux-designer --smart-approve
+vibe --agent ux-designer
 ```
 
 Then paste this prompt:
@@ -184,7 +184,7 @@ through `html-page-review/frame.html`.
 
 ```bash
 cd ~/code/bakery-demo
-vibe --agent wp-frontend-builder --smart-approve
+vibe --agent wp-frontend-builder
 ```
 
 Then paste this prompt:
@@ -222,17 +222,17 @@ with `vibe --agent wp-frontend-builder`.
 
 Agent: `wp-frontend-builder`, with `html-to-block-theme`.
 
-**Model:** a fast coding model such as GLM for the conversion. Before you accept its report, run
-`/model mistral-medium-3.5` in the same session and ask it to compare the screenshots of
-`index.html` and the site section by section. Without that switch, "what still differs" comes from
-measurements only.
+**Model:** Mistral Large 4: a full conversion needs its 1M context, and its image support lets it
+compare the screenshots of `index.html` and the site section by section. Ask for that comparison
+before you accept the report. On a text-only model, "what still differs" comes from measurements
+only, however confident the report sounds: switch with `/model` for the comparison.
 
 Run it on a branch:
 
 ```bash
 cd ~/code/bakery-demo
 git switch -c feat/block-theme
-vibe --agent wp-frontend-builder --smart-approve
+vibe --agent wp-frontend-builder
 ```
 
 Then paste this prompt:
@@ -283,13 +283,13 @@ Agent: `wp-frontend-builder`, on the same branch as 4, so its diff shows only th
 Fill in the numbered list from the differences prompt 4 reported and from your own screenshots,
 one point per difference.
 
-**Model:** a fast coding model such as GLM for the fixes, then `/model mistral-medium-3.5` in the
-same session for the before and after comparison.
+**Model:** the model with image support from stage 4 (Mistral Large 4), for the fixes and the
+before and after comparison.
 
 ```bash
 cd ~/code/bakery-demo
 git switch feat/block-theme
-vibe --agent wp-frontend-builder --smart-approve
+vibe --agent wp-frontend-builder
 ```
 
 Then paste this prompt:
