@@ -14,8 +14,8 @@ vibe --agent <agent> --smart-approve
 
 | # | Step | Agent | Outcome | Commit |
 |---|------|-------|---------|--------|
-| 0 | Setup: folder, images, local site, plugins | `wp-frontend-builder` with `demo-project-setup` | Site returns 200 at https://lindeboom-demo.test, Aludra (symlinked working copy) and Contact Form 7 active | – |
-| 1 | Build from brief | `wp-frontend-builder` | Not run yet | – |
+| 0 | Setup: folder, images, local site, plugins | `wp-frontend-builder` with `demo-project-setup` | Site returns 200 at https://lindeboom-demo.test, Aludra (symlinked working copy) and Contact Form 7 active; photos and credits added in a follow-up run, credits corrected after a check by eye | `482ed82`, `5f43091`, `c97e29e`, `5a0195c` |
+| 1 | Build from brief | `wp-frontend-builder` | `index.html` with Savor adapted, Dutch copy, the photos from `CREDITS.md`, contrast and widths measured; visual check not done by the agent (GLM-5.3 has no image support), see notes under 1 | `4a56809` |
 | 2 | Review the built page | `ux-designer` | Not run yet | – |
 | 3 | Apply review notes | `wp-frontend-builder` | Not run yet | – |
 | 4 | Convert to a block theme (Mode B, Aviendha + Aludra) | `wp-frontend-builder` | Not run yet | – |
@@ -91,7 +91,42 @@ Why it is written this way:
 - **Local images only:** no broken or made-up URLs, no `url()` backgrounds for the Cover block to
   untangle, and the same files go into the theme.
 
-Result: _not run yet._
+Result (`4a56809`, GLM-5.3 in Vibe 3.1.2): one self-contained `index.html` of about 940 lines,
+sections header, hero, taarten, workshop, over ons, bestelformulier, contact and footer, each
+marked as a future pattern.
+- **Design system:** Savor (Food & Beverage, fetched from the pinned upstream commit because Food &
+  Beverage specs are not vendored). The agent read Graza, The Drake Hotel and Floema first and
+  turned them down. Adapted: maroon ink to warm brown (`#3b2415`), Savor's display and grotesk
+  faces to Fraunces and Hanken Grotesk (both OFL, on Fontsource for the theme; loaded from Google
+  Fonts in the prototype), no typewriter faces, no flour-yellow accent. Tokens as
+  `--wp--preset--color/font-family/font-size/spacing--*`, radii as `--lindeboom--radius--*`.
+- **Photos:** only the primaries from `images/CREDITS.md`. The contact photo is cropped with
+  `object-position: 50% 18%` so the Vietnamese menu stays out of frame.
+- **Measured, not looked at:** every text and background pair at 5:1 or more; the hero text over
+  the photo sampled pixel by pixel at 375, 800 and 1280px, worst case 5.6–6.4:1; a one-row 72px
+  header, the hamburger below 1024px with 44px tap targets, no horizontal overflow at 375, 640, 800,
+  1023, 1024 and 1280px; all 8 images load. The header CTA shows from 640px.
+- **The slop gate found one real defect:** the hero text sat at the top of the photo, over the
+  weakest part of the dark overlay. Fixed with bottom alignment, as in Savor, and a stronger
+  gradient, then measured again.
+- **Checked by eye afterwards, outside the session:** screenshots at 375/390 and 1440px through an
+  iframe at the exact width. The page is right at phone width (hamburger, wrapped headline, stacked
+  buttons) and the hero, cake and workshop photos match their credits.
+
+What went wrong:
+- **No image support.** GLM-5.3 has no `supports_images = true` in `~/.vibe/config.toml`, so the
+  agent could not see its screenshots ("came through as a raw image payload, too large to
+  process"). It relied on measurements, which is the right fallback, but no visual pass happened
+  in the session. Use `/model mistral-medium-3.5` for checks by eye (toolbox 1.18.0 now says so).
+- **Browser extension.** The Real Browser extension was disconnected at first; once connected it
+  could not resize the window and swallowed return values. The agent then wrote a DevTools-protocol
+  script in `/tmp` for the width checks. That script did set exact widths, which a plain
+  `--window-size=375` screenshot does not on macOS (headless Chrome will not go below 500px); the
+  toolbox now uses `html-page-review/frame.html` for this.
+- **Shell rules.** It piped `ls` into `head` and `tail`, and its `rm` cleanup of the test PNGs in
+  `/tmp` was blocked by the guard.
+- **Copy:** every cake card links "Bestel deze taart", also the macarons card, which is not a cake.
+  Left for the review.
 
 ## 2. Review the built page
 
