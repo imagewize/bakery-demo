@@ -16,8 +16,8 @@ vibe --agent <agent> --smart-approve
 |---|------|-------|---------|--------|
 | 0 | Setup: folder, images, local site, plugins | `wp-frontend-builder` with `demo-project-setup` | Site returns 200 at https://lindeboom-demo.test, Aludra (symlinked working copy) and Contact Form 7 active; photos and credits added in a follow-up run, credits corrected after a check by eye | `482ed82`, `5f43091`, `c97e29e`, `5a0195c` |
 | 1 | Build from brief | `wp-frontend-builder` | `index.html` with Savor adapted, Dutch copy, the photos from `CREDITS.md`, contrast and widths measured; visual check not done by the agent (GLM-5.3 has no image support), see notes under 1 | `4a56809` |
-| 2 | Review the built page | `ux-designer` | Not run yet | – |
-| 3 | Apply review notes | `wp-frontend-builder` | Not run yet | – |
+| 2 | Review the built page | `ux-designer` | Two notes on Mistral Medium 3.5, visual pass done; note 1 real (open menu under the hero), note 2 adjusted; missed the macarons link | `c0c5059` |
+| 3 | Apply review notes | `ux-designer` (by mistake) | Note 1, a softened note 2 and the macarons link applied, checked at 390px | `c5af28f` |
 | 4 | Convert to a block theme (Mode B, Aviendha + Aludra) | `wp-frontend-builder` | Not run yet | – |
 | 5 | Design pass against `index.html` | `wp-frontend-builder` | Not run yet | – |
 
@@ -157,7 +157,22 @@ Then paste this prompt:
 Load html-page-review and review index.html against the brief in README.md.
 ```
 
-Result: _not run yet._
+Result (`c0c5059`, Mistral Medium 3.5 after `/model`): two notes in `REVIEW.md`. The run did what
+the skill asks: the probe at 390, 768 and 1440px, one screenshot per width through `frame.html`
+(600, 800 and 1460px windows) and "Visual pass: done". It also read `~/.vibe/config.toml` to check
+image support. Vibe asked once to read `probe.html` and `frame.html` from the toolbox.
+1. **Open mobile menu overlaps the hero at 390px.** Real: with the `<details>` menu open, the hero
+   kicker, headline and button painted over the menu links, because `.site-header` was
+   `position: relative` without a `z-index`. Confirmed with a separate screenshot of the open menu.
+   The suggested fix (`z-index` on `.nav-toggle .site-nav`) was replaced by `z-index: 10` on
+   `.site-header`.
+2. **Hero pushes the content below the fold on phones.** A judgement call against the brief: the
+   full-bleed hero and its bottom-aligned text are on purpose (Savor, and the hero contrast was
+   measured for that position). The suggested fix, centring the text, was not taken; only the
+   phone hero height was lowered so the cakes peek in.
+
+Missed: "Bestel deze taart" on the macarons card. The review was dated 2024-11-12 instead of
+2026-11-12.
 
 ## 3. Apply review notes
 
@@ -184,7 +199,24 @@ git commit -am "design: <what changed>"   # keep this run
 git restore index.html                    # throw this run away
 ```
 
-Result: _not run yet._
+Result (`c5af28f`, GLM-5.3). The prompt used:
+
+```
+Read index.html and REVIEW.md. Apply review note 1 (put z-index: 10 on .site-header so the open mobile menu sits above the hero). For note 2, keep the hero text bottom-aligned and only lower the hero min-height at phone width so the first cake section peeks in. Also change the macarons card link from "Bestel deze taart" to "Bestel macarons". Don't edit REVIEW.md. When done, list per note what you changed.
+```
+
+- `.site-header` gets `z-index: 10`: the open menu now sits on its own panel above the hero.
+- `.hero` is `min(70svh, 40rem)` on phones and `min(88svh, 50rem)` from 40rem up; the text stays
+  bottom-aligned and "Onze taarten" shows on a 390×844 screen.
+- The macarons card links "Bestel macarons".
+
+Checked by eye at 390px, outside the session, through `frame.html` (closed and open menu).
+
+What went wrong: the run used the stage 2 session, so it ran as `ux-designer` (switched back to
+GLM with `/model`) instead of `wp-frontend-builder`. `ux-designer` is told never to edit the page
+under review, and it lacks the builder's rules (one command per call, the mobile check,
+`frame.html` screenshots). The three edits were small and came out right, but start this stage
+with `vibe --agent wp-frontend-builder`.
 
 ## 4. Convert on Aviendha + Aludra
 
