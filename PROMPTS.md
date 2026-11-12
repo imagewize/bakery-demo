@@ -25,18 +25,10 @@ vibe --agent <agent> --smart-approve
 
 Done with the `demo-project-setup` skill. To repeat it by hand:
 
-**Images.** Photos are not there yet: the user downloads them into `images/` after this run
-(see `images/CREDITS.md` for what is still needed).
-Use only downloaded files, never made-up stock URLs: the agent invents photo IDs, which give broken
-images, and the theme needs local files anyway. Keep Unsplash's own download names: the follow-up
-run reads the photographer and photo ID from them. After adding the photos, start a fresh session
-and paste:
-
-```
-Load demo-project-setup. Photos added to images/: fill in CREDITS.md, fit prompt 1 to the photos and commit.
-```
-
-It resizes the photos, writes one `images/CREDITS.md` row per photo and fits prompt 1 to them.
+**Images.** The photos are in place in `images/` (22 from Unsplash, resized to at most 1600px wide
+with `scripts/resize-images.sh`, one `images/CREDITS.md` row each). Never invent stock URLs:
+made-up photo IDs give broken images, and the theme needs local files anyway. Check the credits
+table for the suggested use of each file before assigning one to a section.
 
 **Local site.** Laravel Valet, with Aludra and Contact Form 7:
 
@@ -83,7 +75,7 @@ Brief:
 
 This is a homepage, not a landing page. Sections: header, hero, cakes, workshop, about, order form (fields: name, email, date, cake, message), contact, footer.
 
-Images: use only the files in images/ (credits in images/CREDITS.md), as <img> with width, height, alt text and loading="lazy" except the hero. No url() backgrounds, no external image URLs.
+Images: use only the files in images/ (credits, orientations and suggested uses in images/CREDITS.md), as <img> with width, height, alt text and loading="lazy" except the hero. Pick the hero from the landscape candidates (angelo-pantazis-2-U0A2tNYhM, brooke-lark-pGM4sjt_BdQ, nadya-spetnitskaya-tOYiQxF9-Ys, phillip-flores-3OZSvjQWhZk, tabitha-turner-Ns2aJ5OXKds, yeh-xintong-go3DT3PpIw4) and the cake cards from the portrait files (brooke-lark-V4MBq8kue3U, deva-williamson-S2jw81lfrG0, hamideh-jafari-974x2guatCs, heather-barnes-WbZesfqwR-A, katie-rosario-QNyRp21hb5I, kirsten-drew-n49BjsFf5dI, ulysse-pointcheval-1WmlAiYgnoI). No url() backgrounds, no external image URLs.
 
 Minimal questions: state your assumptions at the top of your reply, then build.
 
