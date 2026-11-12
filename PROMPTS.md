@@ -26,9 +26,10 @@ vibe --agent <agent> --smart-approve
 Done with the `demo-project-setup` skill. To repeat it by hand:
 
 **Images.** The photos are in place in `images/` (22 from Unsplash, resized to at most 1600px wide
-with `scripts/resize-images.sh`, one `images/CREDITS.md` row each). Never invent stock URLs:
-made-up photo IDs give broken images, and the theme needs local files anyway. Check the credits
-table for the suggested use of each file before assigning one to a section.
+with `scripts/resize-images.sh`, one `images/CREDITS.md` row each, uses content-verified in the
+browser). Never invent stock URLs: made-up photo IDs give broken images, and the theme needs
+local files anyway. `images/CREDITS.md` names the hero, the cake cards, the workshop, about and
+contact photos, and the spares.
 
 **Local site.** Laravel Valet, with Aludra and Contact Form 7:
 
@@ -75,7 +76,7 @@ Brief:
 
 This is a homepage, not a landing page. Sections: header, hero, cakes, workshop, about, order form (fields: name, email, date, cake, message), contact, footer.
 
-Images: use only the files in images/ (credits, orientations and suggested uses in images/CREDITS.md), as <img> with width, height, alt text and loading="lazy" except the hero. Pick the hero from the landscape candidates (angelo-pantazis-2-U0A2tNYhM, brooke-lark-pGM4sjt_BdQ, nadya-spetnitskaya-tOYiQxF9-Ys, phillip-flores-3OZSvjQWhZk, tabitha-turner-Ns2aJ5OXKds, yeh-xintong-go3DT3PpIw4) and the cake cards from the portrait files (brooke-lark-V4MBq8kue3U, deva-williamson-S2jw81lfrG0, hamideh-jafari-974x2guatCs, heather-barnes-WbZesfqwR-A, katie-rosario-QNyRp21hb5I, kirsten-drew-n49BjsFf5dI, ulysse-pointcheval-1WmlAiYgnoI). No url() backgrounds, no external image URLs.
+Images: use only the files in images/ (credits, orientations and content-verified uses in images/CREDITS.md), as <img> with width, height, alt text and loading="lazy" except the hero. Hero: images/brooke-lark-pGM4sjt_BdQ-unsplash.jpg (bread and butter on a work table, landscape, full-bleed). Cake cards: the portrait files (brooke-lark-V4MBq8kue3U, deva-williamson-S2jw81lfrG0, hamideh-jafari-974x2guatCs, katie-rosario-QNyRp21hb5I are the strongest; heather-barnes-WbZesfqwR-A, kirsten-drew-n49BjsFf5dI, ulysse-pointcheval-1WmlAiYgnoI as alternates). Workshop: farhan-shaikh-rVOIf6tc5DU (hands kneading), alternates nadya-spetnitskaya-tOYiQxF9-Ys and ulysse-pointcheval-1WmlAiYgnoI. About: mae-mu-BxsGyQwjwaw, alternates alan-aprilio-FJyjcrEBsMo and estudio-bloom-B4LfDN2vMGg. Contact: phillip-flores-3OZSvjQWhZk (shop front), alternate tabitha-turner-Ns2aJ5OXKds. No url() backgrounds, no external image URLs.
 
 Minimal questions: state your assumptions at the top of your reply, then build.
 
