@@ -157,6 +157,7 @@ a { color: inherit; }
 .site-header {
   background: var(--wp--preset--color--base);
   position: relative;
+  z-index: 10;
 }
 
 .header-inner {
@@ -229,7 +230,8 @@ a { color: inherit; }
 /* ---------------- Hero: volledig uitlopende foto, tekst erover ---------------- */
 .hero {
   position: relative;
-  min-height: min(88svh, 50rem);
+  /* op de telefoon lager, zodat de eerste taartensectie boven de vouw meekijkt */
+  min-height: min(70svh, 40rem);
   display: grid;
 }
 
@@ -556,6 +558,8 @@ a { color: inherit; }
 @media (min-width: 40rem) {
   .header-cta { display: inline-block; }
 
+  .hero { min-height: min(88svh, 50rem); }
+
   .cakes__list { grid-template-columns: repeat(2, 1fr); gap: var(--wp--preset--spacing--60); }
 
   .order form { grid-template-columns: repeat(2, 1fr); }
@@ -700,7 +704,7 @@ a { color: inherit; }
               <p class="cake__desc">Elke week nieuwe smaken uit de winkel; deze week citroen, framboos en pistache.</p>
               <p class="cake__meta">
                 <span class="cake__price">per 6 € 12,50</span>
-                <a class="cake__order" href="#bestellen">Bestel deze taart</a>
+                <a class="cake__order" href="#bestellen">Bestel macarons</a>
               </p>
             </figcaption>
           </figure>
