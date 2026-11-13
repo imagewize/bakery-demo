@@ -19,7 +19,8 @@ vibe --agent <agent>
 | 2 | Review the built page | `ux-designer` | Two notes on Mistral Medium 3.5, visual pass done; note 1 real (open menu under the hero), note 2 adjusted; missed the macarons link | `c0c5059` |
 | 3 | Apply review notes | `ux-designer` (by mistake) | Note 1, a softened note 2 and the macarons link applied, checked at 390px | `c5af28f` |
 | 4 | Convert to a block theme (Mode B, Aviendha + Aludra) | `wp-frontend-builder` | `theme-lindeboom/` forked from Aviendha, homepage pattern on six Aludra blocks plus a core Cover hero, active on the local site; draft PR #1 | `60f881c` |
-| 5 | Design pass against `index.html` | `wp-frontend-builder` | In progress: first pass committed as `wip` (5a); 5b stopped after 11 minutes without an edit; 5c fixed button hover and the mobile menu colour; 5d the menu gutter, its button and cache-busting | `9964aa4` |
+| 5 | Design pass against `index.html` | `wp-frontend-builder` | 5a first pass (`wip`); 5b stopped after 11 minutes without an edit; 5c button hover and mobile menu colour; 5d menu gutter, its button and cache-busting; merged in PR #1 | `9964aa4`–`2f48d0f` |
+| 6 | Compare the site with `index.html`, no edits | `wp-frontend-builder` | Report of about 45 differences in 9 sections, measured with `measure.mjs`; three root causes in `theme.json` (fluid type, spacing slugs, block gap) | – |
 
 ## 0. Setup
 
@@ -462,3 +463,82 @@ Measured in a browser after each report, two rounds of fixes before the button w
 Lesson: the agent's own report of a layout fix is a prediction. Measure it in a browser (bounding
 boxes at the exact width) before accepting it; each wrong round here was caught that way, not by
 the checks, which all passed every time.
+
+## 6. Compare the site with `index.html`
+
+Agent: `wp-frontend-builder`, on branch `feat/design-comparison`. A report only, no edits, so the
+user picks what the next round fixes (the compare round of the design-pass loop that
+`html-to-block-theme` 1.7.0 now describes).
+
+```bash
+cd ~/code/bakery-demo
+git switch -c feat/design-comparison
+vibe --agent wp-frontend-builder
+```
+
+Then paste this prompt:
+
+```
+Load html-to-block-theme and html-page-review. Compare https://lindeboom-demo.test with index.html section by section and report the differences. Do not edit any file in this run.
+
+Screenshots: index.html and the site at 1440px and 390px, one headless Chrome command each, through html-page-review/frame.html (390px in a 600px window; never --window-size=390). Write them to /tmp/shots/compare/ (mkdir -p first). Slice each with one magick command as html-page-review step 2 shows (1440: -crop 1440x900 +repage -resize 1100x; 390: -crop 390x+0+0 +repage -crop 390x844 +repage). No python3, node, heredocs, loops or CDP scripts.
+
+Sections: header (closed, and the open mobile menu at 390px — compare spacing between the menu rows with .nav-toggle .site-nav), hero, cakes, workshop, about, order form, contact, footer.
+
+Per section, list each difference as one numbered line: width, what index.html shows, what the site shows, and where it likely comes from (theme.json, the design layer in style.css with line number, the pattern, or an Aludra block default). Measure what you can instead of estimating: sizes, spacing and colours from the CSS (grep index.html and theme-lindeboom/style.css, curl the site for the generated styles). Hover and focus come from the CSS only.
+
+End with the list sorted by how visible each difference is, and mark the ones you are not sure about. I will pick which to fix next.
+```
+
+Result (Mistral Large 4, Vibe 3.1.2). The session started before toolbox #80 and #81, which shaped
+the first half:
+- It spent about 9 minutes trying to screenshot the open mobile menu by saving the site's HTML and
+  rewriting its `<script>` tags with `sed`, with `C=`, `CHROME=` and `SKILL=` shell variables, so
+  most commands asked for approval. It was stopped and given two `measure.mjs` commands (merged as
+  toolbox #80 meanwhile, already allowlisted); from then on it measured every section with that
+  script, on the site and on `index.html`, at 1440, 390 and 800px.
+- Six `magick` slices chained in one call passed Vibe's 30-second shell timeout and were killed.
+  `default_timeout` is now 120 in `~/.vibe/config.toml`, and toolbox #81 puts "no shell variables,
+  ever" and "one heavy command per call" at the top of the agent's shell rules.
+- The site screenshots through `frame.html` showed no text (web fonts not loaded within the
+  virtual-time budget); the agent said so and took its site numbers from `measure.mjs` instead.
+
+The report: about 45 numbered differences across header, open mobile menu, hero, cakes, workshop,
+about, order form, contact and footer, each with both measurements and a likely source file and
+line, then sorted by visibility, with four items marked uncertain. Its three root causes, checked
+afterwards with `measure.mjs` and the served CSS:
+
+- **S1, fluid type.** `theme.json` has `settings.typography.fluid: true`, so WordPress turns the
+  fixed sizes into clamps: `medium` 1.0625rem (17px in `index.html`) becomes
+  `clamp(14px, …, 20px)`, so body text is 20px at 1440 and 14.5px at 390. The `fontSizes` values
+  themselves match the source.
+- **S2, spacing slugs.** The design layer uses `var(--wp--preset--spacing--20)` to `--80` 38 times,
+  copied from `index.html` by name. The theme defines Aviendha's slugs (`2-x-small` to `x-large`),
+  not 20–80, so WordPress fills those names from its default spacing scale with other values:
+  0.44/0.67/1/1.5/2.25/3.38/5.06rem against the source's 0.5/1/1.5/2/3/4.5/6rem. Every padding
+  and gap is 25–33% tighter. This is the colour trap from 5c again (a token ported by name, not
+  by value), now for spacing; the toolbox's "port by value" rule (#79) only covers colours.
+- **S3, block gap.** `styles.spacing.blockGap` (`medium`) gives each section in `<main>` a 32px
+  (24px at 390) top margin: cream strips above the cakes and contact sections, and the hero starts
+  lower.
+
+The most visible items, all confirmed in the browser at 1440px:
+1. The hero text block spans the full width (x 20, 1400px wide) instead of the 1152px content
+   column (x 144) that every other section uses.
+2. Cakes: the grid is 1080px at x 180 (Aludra's `max-width`) instead of 1152px; card titles are
+   36px instead of 22px (fluid `large`); card text is `#755D43` 20px instead of `#3B2415` 17px
+   (Aludra's `!important` colour beats the design layer).
+3. All section padding and gaps tighter (S2); body text 20px instead of 17px (S1).
+4. Cream strips between sections (S3).
+5. Footer columns flush against each other: gap 0, because `.lindeboom-footer .wp-block-group
+   { gap: 0 }` outranks `.lindeboom-footer__grid { gap: … }`; footer padding from the part's
+   inline style instead of the design layer.
+
+Further down: header 86px tall instead of 72px at 1440 (52px at 390), a 24px icon-only hamburger
+instead of the 44px "Menu" button, open-menu rows 64px tall and 88px apart instead of 48px and
+56px, the contact details as a two-column grid of icon chips instead of a single list, the workshop
+split 46/54 instead of 50/50, and the order band inset 10.7px at 390.
+
+Lesson: three settings in `theme.json` explain most of a long list. Before fixing items one by
+one, look for a token or a global setting that several differences share.
+
