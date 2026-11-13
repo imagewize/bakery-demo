@@ -21,6 +21,7 @@ vibe --agent <agent>
 | 4 | Convert to a block theme (Mode B, Aviendha + Aludra) | `wp-frontend-builder` | `theme-lindeboom/` forked from Aviendha, homepage pattern on six Aludra blocks plus a core Cover hero, active on the local site; draft PR #1 | `60f881c` |
 | 5 | Design pass against `index.html` | `wp-frontend-builder` | 5a first pass (`wip`); 5b stopped after 11 minutes without an edit; 5c button hover and mobile menu colour; 5d menu gutter, its button and cache-busting; merged in PR #1 | `9964aa4`–`2f48d0f` |
 | 6 | Compare the site with `index.html`, no edits | `wp-frontend-builder` | Report of about 45 differences in 9 sections, measured with `measure.mjs`; three root causes in `theme.json` (fluid type, spacing slugs, block gap) | – |
+| 6b | Apply: S1–S3, hero, cakes, footer | `wp-frontend-builder` | Fixed in `theme.json` (fluid off, `defaultFontSizes` off, spacing slugs 20–80), block gap 0 on the homepage, hero and cakes at the 1152px column, footer gap and padding; every value measured on both sides | see log |
 
 ## 0. Setup
 
@@ -541,4 +542,60 @@ split 46/54 instead of 50/50, and the order band inset 10.7px at 390.
 
 Lesson: three settings in `theme.json` explain most of a long list. Before fixing items one by
 one, look for a token or a global setting that several differences share.
+
+### 6b. Apply the root causes and the most visible items
+
+A fresh session (toolbox with #77–#81 merged, `default_timeout = 120`), Mistral Large 4. The
+prompt used:
+
+```
+Apply round, edits first, then checks. No shell variables (write every path in full), one heavy command per call. Measure every fix with measure.mjs on index.html and the site; a value you did not measure is "expected".
+
+1. S1: theme.json settings.typography.fluid → false (x-large/xx-large keep their own clamp()).
+2. S2: theme.json settings.spacing: add spacingSizes slugs "20"…"80" with index.html's exact values (0.5, 1, 1.5, 2, 3, 4.5, 6rem), keep the existing named sizes, and set spacingScale {"steps": 0} so WordPress emits no default 20–80 scale. Confirm with curl that --wp--preset--spacing--20…80 now match index.html.
+3. S3: no block-gap margin between the homepage sections (templates/front-page.html main group blockGap 0, or margin-block-start: 0 on main's direct children) — the cream strips above cakes and contact go away and the hero starts right under the header.
+4. Hero: constrain the cover's inner container to the 1152px content width like .wrap (x=144 at 1440, x=20 at 390).
+5. Cakes: card title 22px (font-size large, now fixed by 1), description colour contrast #3B2415 and line-height 1.55 — Aludra's main-accent !important needs a selector that beats it; and the grid at 1152px wide with a 48px gap like index.html.
+6. Footer: column gap back (the .wp-block-group { gap: 0 } rule beats .lindeboom-footer__grid), and padding 72/24 like index.html (the part's inline padding wins over style.css).
+
+Checks: phpcs, sentinel with --url/--user/--pass, then measure.mjs on hero inner container, cake h3 and p, main's second child margin-top, footer grid gap, at 1440 and 390, on both index.html and the site. Report per point with numbers.
+```
+
+Result: all six done in one session, with two approval prompts (a `php -r` JSON check, and one
+early command). It measured `index.html` first as a baseline, and the site before and after each
+edit. phpcs clean, sentinel pass. Four files: `theme.json`, `templates/front-page.html`,
+`parts/footer.html`, `style.css`.
+
+- **S1:** `fluid: false` alone was not enough. The served CSS still had `large: 36px` and
+  `medium: 20px`, because WordPress kept its own default font sizes (`defaultFontSizes` defaults to
+  true) and those won over the theme's sizes with the same slugs. The agent found that with
+  `wp_get_global_settings()` and also set `defaultFontSizes: false`. Served now: `small`
+  0.875rem, `medium` 1.0625rem, `large` 1.375rem, `x-large`/`xx-large` with the source's clamps.
+- **S2:** `spacingSizes` slugs 20–80 at the source's values plus `spacingScale: { "steps": 0 }`;
+  served 0.5–6rem, matching `index.html`.
+- **S3:** `blockGap: "0"` on the homepage's `main` group was not enough either: this WordPress's
+  flow rule reads the preset variable, not the container's `--wp--style--block-gap`. Added
+  `margin-block-start: 0` on `main.lindeboom-home` and its children.
+- **Hero:** the cover's padding removed and its inner container set to
+  `width: min(100% - 2.5rem, 72rem)`, the source's `.wrap` formula.
+- **Cakes:** `.feature-cards__inner` at the same width; card text colour with a selector that beats
+  Aludra's `!important`, line-height 1.55; the 48px gap came with S2.
+- **Footer:** the part's inline padding now uses spacing 70/40; the grid rule re-scoped so its gap
+  wins.
+
+Measured afterwards, outside the session, with `measure.mjs` at 1440 and 390: hero inner
+container x 144, 1152px wide (x 20, 350 at 390); cake titles 22px; card text 17px `#3B2415`; no top
+margin on the sections; footer gap 32px; no horizontal scroll; served font sizes as above. All match
+`index.html`.
+
+Side effect, as intended: every padding and gap that uses a numbered spacing slug now has the
+source's value, and body text is 17px at every width.
+
+Left: the source's larger section padding from 1024px (96/112px instead of 72/96px), which the
+agent measured and reported without touching, and the rest of the stage 6 list (header height and
+hamburger, open-menu rows, contact grid, workshop split, order band inset).
+
+Lesson: the token fixes worked only after a second setting each (`defaultFontSizes`, and a margin
+rule next to `blockGap`). Checking the served CSS and measuring, not reading `theme.json`, is what
+showed both.
 
