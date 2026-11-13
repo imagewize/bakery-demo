@@ -79,7 +79,7 @@ The MIT License is GPL-compatible.
 * License: SIL Open Font License, Version 1.1
 * Source: https://fontsource.org/fonts/fraunces
 * License URI: https://openfontlicense.org
-* Used in: `assets/fonts/fraunces-variable-wght.woff2`
+* Used in: `assets/fonts/fraunces-latin-full-normal.woff2` (all axes, incl. opsz; @fontsource-variable/fraunces 5.3.0)
 * Purpose: Display font family (headings), self-hosted as a variable-font file.
 
 = Hanken Grotesk =
