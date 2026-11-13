@@ -89,6 +89,22 @@ Forked from the Aviendha starter theme.
 }
 
 /*
+ * Front page only: the homepage pattern's sections sit flush against each
+ * other and the hero starts right under the masthead, as in index.html. The
+ * main group in templates/front-page.html carries `blockGap: 0` and the
+ * `lindeboom-home` class; the two rules below cover the flow-layout margins,
+ * because this WP version's `:root :where(.is-layout-flow) > *` rule reads the
+ * global spacing preset directly, not the container's --wp--style--block-gap.
+ */
+.wp-site-blocks > main.lindeboom-home {
+	margin-block-start: 0;
+}
+
+.lindeboom-home > * {
+	margin-block-start: 0;
+}
+
+/*
  * The WooCommerce coming-soon template wraps its `main` in the block's own
  * `.wp-block-woocommerce-coming-soon` div, so `main` is no longer a direct child
  * of `.wp-site-blocks` and the rule above cannot reach it. The wrapper is the
@@ -446,14 +462,20 @@ body .lindeboom-header--dark .wp-block-site-logo {
  * top-right corner of the screen — well above and outside of where the
  * hamburger it replaces actually sits.
  *
- * Give the overlay the header's own padding directly instead of relying on
- * that chain, so the close button opens right where the hamburger was. This
- * also becomes the right-hand inset the link list (§ above) stretches
- * against, keeping both edges aligned.
+ * Give the overlay the header's own top padding directly instead of relying on
+ * that chain. Its inline padding is 0, so the link list runs the full panel
+ * width like the source's .nav-toggle .site-nav (x 20, w 350 at 390px); the
+ * close button gets its own padding below, since it is absolute at the
+ * overlay's top-right corner and would otherwise land flush on the screen edge.
  */
 .lindeboom-header .wp-block-navigation__responsive-container.is-menu-open {
 	padding-top: var(--wp--preset--spacing--small);
-	padding-right: var(--wp--preset--spacing--small);
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-close {
+	padding: 0.625rem; /* 44×44 target, icon inset from the literal corner */
 }
 
 /*
@@ -1312,6 +1334,7 @@ a {
 .wp-block-cover.lindeboom-hero {
 	align-items: flex-end;
 	min-height: min(70svh, 40rem) !important; /* beats the block's inline min-height */
+	padding-inline: 0; /* core's cover padding:1em would inset the inner container; the source hero runs edge to edge */
 }
 
 .wp-block-cover.lindeboom-hero::before {
@@ -1330,18 +1353,22 @@ a {
 	z-index: 1; /* above the background image, below the inner container (z 2) */
 }
 
-/* Hero (source .hero__content): the cover's inner container is a centered
- * constrained column already; it only needs the end-alignment padding. Core
- * gives the container `position: relative` but no z-index, so without z 2 the
- * scrim (z 1) paints over the text; the cream colour comes from the source's
- * .hero text, which the removed is-light class used to override. */
+/* Hero (source .hero__content / .wrap): the cover's inner container is pinned
+ * to the 1152px content column (x 144 at 1440, x 20 at 390) like every other
+ * section, instead of core's full-width 100%; it only needs the end-alignment
+ * padding on top of that. Core gives the container `position: relative` but no
+ * z-index, so without z 2 the scrim (z 1) paints over the text; the cream colour
+ * comes from the source's .hero text, which the removed is-light class used to
+ * override. */
 .lindeboom-hero .wp-block-cover__inner-container {
 	color: var(--wp--preset--color--base);
 	display: flex;
 	flex-direction: column;
 	gap: var(--wp--preset--spacing--40);
+	margin-inline: auto;
 	padding-block: 6rem var(--wp--preset--spacing--60);
 	position: relative;
+	width: min(100% - 2.5rem, 72rem);
 	z-index: 2;
 }
 
@@ -1395,6 +1422,14 @@ a {
 .wp-block-aludra-feature-cards {
 	background: none;
 	padding-block: var(--wp--preset--spacing--70) var(--wp--preset--spacing--80);
+}
+
+/* Taarten (source .wrap): the block caps its inner column at 1080px and pads
+ * it 1.25rem each side; the source grid runs the full 1152px content column
+ * (x 144 at 1440, x 20 at 390) like every other section. */
+.wp-block-aludra-feature-cards .feature-cards__inner {
+	max-width: min(100% - 2.5rem, 72rem);
+	padding-inline: 0;
 }
 
 /* Taarten (source .section-intro / h2): the block centres its header and
@@ -1473,9 +1508,14 @@ a {
 	font-weight: 420;
 }
 
+/* The !important on color is load-bearing: Aludra's `.feature-card p` paints
+ * main-accent with !important, and only a higher-specificity !important beats
+ * it (this selector is 0-2-1 against the block's 0-1-1). line-height 1.55 is
+ * the source body leading, against the block's 1.7. */
 .wp-block-aludra-feature-cards .feature-card p {
-	color: var(--wp--preset--color--contrast);
+	color: var(--wp--preset--color--contrast) !important;
 	font-size: var(--wp--preset--font-size--medium);
+	line-height: 1.55;
 	margin: 0 !important;
 }
 
@@ -1509,9 +1549,11 @@ a {
 
 /* Workshop (source .section--tint + .workshop__grid): the split-section's own
  * centred header stays empty, which the block hides; its hairline and its
- * reveal decoration are not in the source. */
+ * reveal decoration are not in the source. Its vertical padding is the
+ * source's .section padding (72/96), not the block's clamp (104px at 1440). */
 .wp-block-aludra-split-section {
 	border-bottom: 0;
+	padding-block: var(--wp--preset--spacing--70) var(--wp--preset--spacing--80);
 }
 
 .wp-block-aludra-split-section .split-section__header:has(> .split-section__heading:empty) {
@@ -1675,7 +1717,10 @@ a {
 }
 
 .wp-block-aludra-contact-section {
-	padding: var(--wp--preset--spacing--70) var(--wp--preset--spacing--30) var(--wp--preset--spacing--80);
+	/* Source .order has no horizontal padding of its own; the inner column
+	   (max-width min(100% - 2.5rem, 72rem)) provides the inset, so the form
+	   sits at x 20 w 350 on a phone like in index.html. */
+	padding: var(--wp--preset--spacing--70) 0 var(--wp--preset--spacing--80);
 }
 
 .wp-block-aludra-contact-section .contact-section__inner {
@@ -1868,6 +1913,10 @@ a {
 .wp-block-aludra-icon-grid .icon-grid__inner {
 	display: grid;
 	gap: var(--wp--preset--spacing--60);
+	/* The block itself is already the constrained column (x 144 w 1152 at
+	   1440, x 20 w 350 at 390); only the block's own spacing-50 (32px) inner
+	   padding needs to go, or the content insets to x 176 / w 1088 at 1440. */
+	padding-inline: 0;
 }
 
 .wp-block-aludra-icon-grid .icon-grid__title {
@@ -1916,7 +1965,7 @@ a {
 }
 
 .wp-block-aludra-icon-grid .icon-grid__icon {
-	background: var(--wp--preset--color--tertiary);
+	display: none; /* source .contact__details rows carry no icon chips */
 }
 
 .wp-block-aludra-icon-grid .icon-grid__text {
@@ -1925,7 +1974,23 @@ a {
 }
 
 .wp-block-aludra-icon-grid .icon-grid__grid {
+	/* Source .contact__details: one column, 24px between rows — not the
+	   block's auto-fit minmax(240px, 1fr) chip grid. */
+	grid-template-columns: minmax(0, 1fr);
 	gap: var(--wp--preset--spacing--40);
+}
+
+/* Sections (source .section @media (min-width: 64rem)): from 1024px up the
+ * source raises section padding to 96px top / 112px bottom (spacing-80 / 7rem).
+ * Below 1024px it stays 72/96 (spacing-70/80), which the rules above set. */
+@media (min-width: 64rem) {
+	.wp-block-aludra-feature-cards,
+	.wp-block-aludra-split-section,
+	.wp-block-aludra-about,
+	.wp-block-aludra-contact-section,
+	.wp-block-aludra-icon-grid {
+		padding-block: var(--wp--preset--spacing--80) 7rem;
+	}
 }
 
 /* Header (source .wordmark): the starter prints the wordmark at weight 800
@@ -1945,7 +2010,7 @@ a {
 	font-size: var(--wp--preset--font-size--base);
 	font-weight: 600;
 	letter-spacing: 0;
-	padding: 0.875rem 1.25rem;
+	padding: 1.0625rem 1.75rem; /* source .btn: 17px 28px, like every other button */
 	border-radius: 5px;
 	transition: background-color 150ms ease;
 	white-space: nowrap;
@@ -1965,16 +2030,19 @@ a {
 }
 
 .lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
-	align-items: flex-start;
+	align-items: stretch; /* links fill the panel width, x 20 w 350 like .site-nav a */
+	gap: var(--wp--preset--spacing--20); /* rows 56px apart: 48px links + 8px, source gap spacing-20 */
 	padding: var(--wp--preset--spacing--40) 1.25rem var(--wp--preset--spacing--60); /* source .nav-toggle .site-nav; the close button sits outside this list, so it keeps its corner */
 	text-align: left;
 }
 
 .lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+	box-sizing: border-box; /* min-height 3rem then includes the padding: 48px tall like the source links, not 64 */
 	font-size: 1.125rem;
 	font-weight: 500;
 	min-height: 3rem;
 	padding: 0.5rem 0.25rem;
+	width: 100%; /* the li stretches to the panel width; without this the link shrink-wraps right-aligned (x 300, w 70) */
 }
 
 .lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content:hover {
@@ -2002,8 +2070,8 @@ a {
 	font-size: var(--wp--preset--font-size--base);
 	font-weight: 600;
 	justify-content: center;
-	min-height: 3.875rem;
-	padding: 1.0625rem 1.75rem;
+	min-height: 3rem; /* source .nav-cta inherits .site-nav a min-height 3rem: 48px tall, not 62 */
+	padding: 0.5rem 0.25rem;
 	text-decoration: none;
 	width: 100%;
 }
@@ -2019,6 +2087,17 @@ a {
 	}
 }
 
+/* Hamburger tap target (source .nav-toggle > summary: min-height 44px,
+ * padding 0.5rem 0.75rem): core's open button is the bare 24×24 icon with
+ * padding 0, so pad it to a 44×44 box. A visible "Menu" label is not possible
+ * without hacks: the button renders the icon only, and the navigation block's
+ * `icon` attribute only switches which icon. */
+.lindeboom-header .wp-block-navigation__responsive-container-open {
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0.625rem;
+}
+
 /* Footer (source .site-footer): the cream footer band, Fraunces wordmark and
  * four columns; the starter's footer rules target a different class. */
 .lindeboom-footer {
@@ -2031,7 +2110,10 @@ a {
 	gap: 0;
 }
 
-.lindeboom-footer__grid {
+/* Scoped through .lindeboom-footer so the gap survives the `.wp-block-group
+ * { gap: 0 }` reset directly above: both selectors are 0-2-0, and this one
+ * comes later in the file. Source .footer-grid: 2rem (32px) between columns. */
+.lindeboom-footer .lindeboom-footer__grid {
 	display: grid;
 	gap: var(--wp--preset--spacing--50);
 }
