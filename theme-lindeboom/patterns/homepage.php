@@ -291,7 +291,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:group -->
 
 <!-- wp:paragraph {"className":"icon-grid__text"} -->
-<p class="icon-grid__text"><strong>Nachtegaalstraat 41, 3581 AC Utrecht</strong></p>
+<p class="icon-grid__text">Nachtegaalstraat 41<br>3581 AC Utrecht</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -339,7 +339,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:group -->
 
 <!-- wp:paragraph {"className":"icon-grid__text"} -->
-<p class="icon-grid__text"><strong>Dinsdag t/m vrijdag</strong> 07.00 – 18.00</p>
+<p class="icon-grid__text"><strong>Dinsdag t/m vrijdag</strong><br><span class="lindeboom-hours__time">07.00 – 18.00</span></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -351,7 +351,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:group -->
 
 <!-- wp:paragraph {"className":"icon-grid__text"} -->
-<p class="icon-grid__text"><strong>Zaterdag</strong> 07.00 – 17.00</p>
+<p class="icon-grid__text"><strong>Zaterdag</strong><br><span class="lindeboom-hours__time">07.00 – 17.00</span></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -363,7 +363,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:group -->
 
 <!-- wp:paragraph {"className":"icon-grid__text"} -->
-<p class="icon-grid__text"><strong>Zondag en maandag</strong> gesloten</p>
+<p class="icon-grid__text"><strong>Zondag en maandag</strong><br><span class="lindeboom-hours__time">gesloten</span></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></div></div>

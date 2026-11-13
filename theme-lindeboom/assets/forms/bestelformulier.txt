@@ -5,7 +5,7 @@
     [email* email autocomplete:email] </label>
 
 <label> Gewenste datum
-    <span class="lindeboom-hint lindeboom-hint--inline">Bestel minimaal twee dagen vooruit.</span>
+    <span class="lindeboom-hint">Bestel minimaal twee dagen vooruit.</span>
     [date* datum] </label>
 
 <label> Welke taart wil je?

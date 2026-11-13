@@ -23,6 +23,7 @@ vibe --agent <agent>
 | 6 | Compare the site with `index.html`, no edits | `wp-frontend-builder` | Report of about 45 differences in 9 sections, measured with `measure.mjs`; three root causes in `theme.json` (fluid type, spacing slugs, block gap) | – |
 | 6b | Apply: S1–S3, hero, cakes, footer | `wp-frontend-builder` | Fixed in `theme.json` (fluid off, `defaultFontSizes` off, spacing slugs 20–80), block gap 0 on the homepage, hero and cakes at the 1152px column, footer gap and padding; every value measured on both sides | see log |
 | 6c | Apply: section padding, header, hamburger, open menu, contact, workshop, order band | `wp-frontend-builder` | All seven measured equal to `index.html` at 1440 and 390; "Menu" label on the hamburger not possible without hacks | see log |
+| 6d | Apply: Fraunces optical size, hero text position, cake text, form, contact, footer | `wp-frontend-builder` | Six points measured equal to `index.html`, the hero h1 to the pixel; the photo inset not ported (a browser default in the prototype) | see log |
 
 ## 0. Setup
 
@@ -651,4 +652,66 @@ width.
 
 Left from the stage 6 list: the "Menu" label on the hamburger (core limitation), the contact
 details' inner grouping, and the desktop navigation's hover underline that only the site has.
+
+### 6d. Font, hero position and the last details
+
+A fresh session (toolbox with #85 and #86: `jq`, todo rule, `measure.mjs --screenshot`), Mistral
+Large 4. Started from a whole-page comparison by eye, outside the session: both pages full height
+at 1440 and 390 in Chromium, the prototype served over `http://127.0.0.1:8765` because
+Playwright refuses `file://`. The prompt used:
+
+```
+Apply round 6d, edits first, then checks. One todo per point, marked done as soon as it is measured. No shell variables, one heavy command per call; JSON with jq. Measure each point with measure.mjs on file:///Users/jasperfrumau/code/bakery-demo/index.html and https://lindeboom-demo.test at 1440 and 390, before and after, and take --screenshot --full of both at the end.
+
+1. Fraunces optical size: index.html loads Fraunces from Google with the opsz axis (opsz,wght@9..144), the theme bundles assets/fonts/fraunces-variable-wght.woff2 with only a wght axis, so every heading is heavier and wider (hero h1 at 1440: index 793.6px wide, site 857.1px; it wraps differently at 390). Replace it with Fontsource's full variable file that includes opsz (fraunces latin, full axes; check the file downloads as woff2), update the fontFace src in theme.json, keep font-optical-sizing auto. Target: hero h1 width within a few px of index.html at 1440 and the same line breaks at 390.
+2. Hero text position: index.html bottom-aligns the hero text (h1 top y 378 at 1440); the site's text sits higher (y 297). Align the cover content to the bottom like the source, at both widths.
+3. Workshop and About photos: index.html shows them smaller and inset in their column; the site's images fill the whole 540px column. Measure the index img boxes and match width and position.
+4. Cake cards: card text max-width like index.html (.cake p 342.7px at 1440; the site's text runs the full 552px card) and the gap between card title and text like index.
+5. Order form: the date hint goes under its label like index.html (site: next to it), and the cake select shows a dropdown arrow like index.html (site: none).
+6. Contact details: like index.html's .visiting/.hours — address on two lines, opening hours as a bold label with the time below in muted colour (site: one bold address line, hours on one line). Keep the aludra/icon-grid block; change its content or CSS, whichever matches with less.
+7. Footer: text and links 17px like index.html (site's footer text is visibly smaller); keep everything else.
+
+Checks: jq empty theme.json, phpcs, sentinel with --url/--user/--pass, then one table per point: index vs site, before and after.
+```
+
+Two messages during the run: the path to `measure.mjs` (it had started searching the home folder
+for it; toolbox #87 now reads it from `skill_paths`), and "skip P3". Its baseline showed that the
+prototype's smaller, inset photos come from the browser's default `<figure>` margin
+(`1em 40px`), which `index.html` never resets: not a design decision, so the site keeps its
+full-column photos. The todo list again stayed at its first item until the user asked, although
+the profile rule from #85 was loaded; put that instruction in the prompt itself next time.
+
+Result: phpcs clean, sentinel pass, no horizontal scroll, before/after tables per point.
+
+- **Fraunces with optical size:** `fraunces-latin-full-normal.woff2` (all axes, including `opsz`)
+  from `@fontsource-variable/fraunces` 5.3.0 replaces the weight-only file;
+  `font-optical-sizing: auto` on h1–h3. The hero h1 went from 857.1px to 793.6px wide at 1440,
+  exactly the prototype's width, with the same three lines at 390.
+- **Hero text at the bottom:** the cover's padding removed and its inner container stretched with
+  `justify-content: flex-end`; h1 at y 378.2 (1440) and 218.3 (390), as in the prototype.
+- **Cake cards:** text `max-width: 36ch` (342.7px) and an 8px gap under the title.
+- **Order form:** the date hint on its own line under the label, in the form template in the
+  theme and in the CF7 form in the local database; the select has its native arrow again.
+- **Contact:** address on two lines, opening hours as a bold label with the time below in muted
+  brown.
+- **Footer:** links and column text 17px; the `has-small-font-size` classes in the part had to go,
+  because preset classes carry `!important`.
+
+Measured afterwards, outside the session, with `measure.mjs`: hero h1 x 144, y 378.2, 793.6px wide
+at 1440 and y 218.3 at 390; cake text 342.7px at both widths; select `appearance: auto`;
+`font-optical-sizing: auto`; no horizontal scroll. `readme.txt` still credited the old font file;
+corrected in the same commit.
+
+Afterwards the prototype was fixed instead: its `.workshop figure` and `.about figure` rules never
+matched (the workshop figure sits in `.workshop__grid`, and the about figure itself carries the
+class `about`), so the browser's default margin stayed. They are now `.workshop__grid figure` and
+`.about__grid figure`; measured, both photos are x 144, 540px wide at 1440 in the prototype and on
+the site, and the About photo matches at 390. New at 390: the site's Workshop photo is x 32, 326px
+wide against the prototype's x 20, 350px (Aludra's split-section padding).
+
+Left: the Workshop photo inset at 390, the hero's button row gap at 390 (24px against 16px, which makes the hero 8px taller), and the "Menu"
+label on the hamburger (core).
+
+Lesson: a heading that looks heavier than the design with the same weight and size is a font file
+without the source's axes. Compare the font URL or file, not only the CSS.
 
