@@ -22,6 +22,7 @@ vibe --agent <agent>
 | 5 | Design pass against `index.html` | `wp-frontend-builder` | 5a first pass (`wip`); 5b stopped after 11 minutes without an edit; 5c button hover and mobile menu colour; 5d menu gutter, its button and cache-busting; merged in PR #1 | `9964aa4`–`2f48d0f` |
 | 6 | Compare the site with `index.html`, no edits | `wp-frontend-builder` | Report of about 45 differences in 9 sections, measured with `measure.mjs`; three root causes in `theme.json` (fluid type, spacing slugs, block gap) | – |
 | 6b | Apply: S1–S3, hero, cakes, footer | `wp-frontend-builder` | Fixed in `theme.json` (fluid off, `defaultFontSizes` off, spacing slugs 20–80), block gap 0 on the homepage, hero and cakes at the 1152px column, footer gap and padding; every value measured on both sides | see log |
+| 6c | Apply: section padding, header, hamburger, open menu, contact, workshop, order band | `wp-frontend-builder` | All seven measured equal to `index.html` at 1440 and 390; "Menu" label on the hamburger not possible without hacks | see log |
 
 ## 0. Setup
 
@@ -598,4 +599,56 @@ hamburger, open-menu rows, contact grid, workshop split, order band inset).
 Lesson: the token fixes worked only after a second setting each (`defaultFontSizes`, and a margin
 rule next to `blockGap`). Checking the served CSS and measuring, not reading `theme.json`, is what
 showed both.
+
+### 6c. The rest of the stage 6 list
+
+Same session as 6b. The prompt used:
+
+```
+Apply round 6c, edits first, then checks. No shell variables (write every path in full), one heavy command per call. Measure every point with measure.mjs on index.html and https://lindeboom-demo.test at 1440 and 390 (390 only where noted), before and after; a value you did not measure is "expected".
+
+1. Section padding from 1024px: index.html raises .section padding to 96px top / 112px bottom at ≥1024px (72/96 below). Port that media query to the design layer for cakes, about, order form and contact. Workshop: replace Aludra's split-section padding (clamp → 104px) with the same 72/96 and 96/112.
+2. Header height 72px at both widths like .header-inner { min-height: 4.5rem }: site is 86px at 1440 and 51.6px at 390 (inline padding x-small/small in parts/header.html). Header row gap 16px at 1440. Header CTA padding 17px 28px like the other buttons (style.css ~1943 overrides it to 14px 20px; width 171 vs 155).
+3. Hamburger tap target at 390: at least 44×44px (index's toggle is 44px tall); the core open button is 24×24 with padding 0. A visible "Menu" label like index.html only if core navigation allows it without hacks; otherwise report.
+4. Open mobile menu at 390 (--click '.wp-block-navigation__responsive-container-open'): links 48px tall and full panel width (index: x 20, w 350), rows 56px apart (gap 8px = spacing-20; core's container gap comes from the block gap), CTA 48px tall from x 20 to 370 (index .nav-cta inherits min-height 3rem; site is 62px, to 360). Compare with index.html via --click '.nav-toggle summary'.
+5. Contact details at 1440: a single column with 24px gap like index.html (site: 2-column icon-chip grid from aludra/icon-grid, auto-fit minmax(240px,1fr)); index.html has no icon chips, so hide them in this section, and keep the block.
+6. Workshop: 50/50 split like index.html (patterns/homepage.php mediaWidth 46 → 50).
+7. Order band at 390: no horizontal inset (form x 20 w 350 like index.html; site x 30.7 w 328.6 from the band's padding-inline spacing-30).
+
+Checks: jq empty theme.json (if changed), phpcs, sentinel with --url/--user/--pass (pattern and header part change), and the measure.mjs numbers per point, index vs site, in one table.
+```
+
+Result: all seven done; three files (`style.css`, `parts/header.html`, `patterns/homepage.php`),
+phpcs clean, sentinel pass. The report ended in a before/after table per point, index against
+site.
+
+- **Section padding:** one `@media (min-width: 64rem)` block for the five Aludra sections; the
+  workshop's own `clamp()` replaced. 96/112px at 1440 and 72/96px at 390 on all five.
+- **Header:** 72px at both widths. The part's row gap had never reached the rendered HTML (the
+  `layout.gap` setting did not serialize), so the row now sets `--wp--style--block-gap` itself; gap
+  16px. Header CTA padding 17/28px, 170.8px wide like the source.
+- **Hamburger:** 44×44px through `min-width`/`min-height` and padding. A "Menu" label is not
+  possible without hacks: core's open button renders only the SVG, and the `icon` attribute only
+  switches the icon. Reported, not built.
+- **Open menu:** links 350px wide and 48px tall, 56px apart, CTA 350×48px; close button 44×44px.
+  This needed `box-sizing: border-box` and `width: 100%` on the links, the trap now in
+  `mobile-navigation.md`.
+- **Contact:** one column, 24px gap, icon chips hidden, block kept. The source's split into a
+  16px-gap and a 10px-gap group inside that column is not ported.
+- **Workshop:** 50/50. Sentinel first failed: 50 is the block's default, so Aludra's `save()` emits
+  no `--aludra-split-media` style, and the pattern's inline style no longer matched. Fixed by
+  dropping it.
+- **Order band:** no horizontal inset at 390; the form at x 20, 350px wide.
+
+Approval prompts: a `php -r` call to pretty-print the sentinel log (`jq` is allowlisted; toolbox
+#85 now says so), and the todo list stayed at its first item until asked twice (#85 too).
+
+Measured afterwards, outside the session, with `measure.mjs`: header 72px at both widths; header
+CTA 170.8×62px; cakes and workshop padding 96/112px at 1440; contact icons `display: none`;
+hamburger and close button 44×44px; open-menu links x 20, 350×48px at y 89.8, 145.8, 201.8 and
+257.8; CTA x 20, 350×48px; order form x 20, 350px wide at 390; no horizontal scroll at either
+width.
+
+Left from the stage 6 list: the "Menu" label on the hamburger (core limitation), the contact
+details' inner grouping, and the desktop navigation's hover underline that only the site has.
 
