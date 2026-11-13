@@ -146,8 +146,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- /wp:aludra/feature-cards -->
 
 <!-- ===== Workshop: aludra/split-section + aludra/service-blocks (gekopieerd uit section-split.php) ===== -->
-<!-- wp:aludra/split-section {"label":"","heading":"","lead":"","mediaWidth":46,"tint":true,"anchor":"werkshop"} -->
-<div class="wp-block-aludra-split-section alignfull is-tinted" id="werkshop" style="margin-top:0;margin-bottom:0"><div class="split-section__shell"><div class="split-section__header"><p class="split-section__label"></p><h2 class="split-section__heading"></h2><p class="split-section__lead"></p></div><div class="split-section__panes" style="--aludra-split-media:46%"><!-- wp:group {"className":"split-section__media"} -->
+<!-- wp:aludra/split-section {"label":"","heading":"","lead":"","mediaWidth":50,"tint":true,"anchor":"werkshop"} -->
+<div class="wp-block-aludra-split-section alignfull is-tinted" id="werkshop" style="margin-top:0;margin-bottom:0"><div class="split-section__shell"><div class="split-section__header"><p class="split-section__label"></p><h2 class="split-section__heading"></h2><p class="split-section__lead"></p></div><div class="split-section__panes"><!-- wp:group {"className":"split-section__media"} -->
 <div class="wp-block-group split-section__media"><!-- wp:image {"sizeSlug":"full","className":"lindeboom-workshop__foto"} -->
 <figure class="wp-block-image size-full lindeboom-workshop__foto"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/nadya-spetnitskaya-tOYiQxF9-Ys-unsplash.jpg' ) ); ?>" alt="Handen die deeg kneden op een met bloem bestoven werkblad, met een deegroller erachter"/><figcaption class="wp-element-caption">Handen in het deeg</figcaption></figure>
 <!-- /wp:image --></div>
