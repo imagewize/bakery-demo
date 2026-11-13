@@ -399,4 +399,14 @@ curl -s https://lindeboom-demo.test/ | grep -o 'wp-element-button:hover[^}]*}'
 Left for a later run: the "Bestel een taart" button in the mobile panel, and a section-by-section
 comparison with screenshots.
 
-Result: _running._
+Result, interim (Mistral Large 4, Vibe 3.1.2, toolbox with #77 and #78, `awk` removed from the
+allowlist): no approval prompts in the first 20-odd commands, all allowlisted `grep`, `sed -n` and
+`wc` calls, and edits 1–4 within a few minutes, against 11 minutes without an edit in 5b.
+- `theme.json`: the button `:hover` background now sits under `color`. The served CSS shows
+  `.wp-block-button__link:hover{background-color: var(--wp--preset--color--primary-accent);…}`.
+- `style.css`: `transition: background-color 150ms ease` on `.wp-block-button__link`, with
+  `transition: none` added to the reduced-motion block.
+- `style.css`: the open mobile menu is painted `tertiary` (`#F5EBD9`) instead of `secondary`, and
+  its links get `align-items: flex-start`.
+
+Still running: the colour audit of the design layer (point 5) and the checks.
