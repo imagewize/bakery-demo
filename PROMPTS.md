@@ -19,7 +19,7 @@ vibe --agent <agent>
 | 2 | Review the built page | `ux-designer` | Two notes on Mistral Medium 3.5, visual pass done; note 1 real (open menu under the hero), note 2 adjusted; missed the macarons link | `c0c5059` |
 | 3 | Apply review notes | `ux-designer` (by mistake) | Note 1, a softened note 2 and the macarons link applied, checked at 390px | `c5af28f` |
 | 4 | Convert to a block theme (Mode B, Aviendha + Aludra) | `wp-frontend-builder` | `theme-lindeboom/` forked from Aviendha, homepage pattern on six Aludra blocks plus a core Cover hero, active on the local site; draft PR #1 | `60f881c` |
-| 5 | Design pass against `index.html` | `wp-frontend-builder` | In progress: first pass committed as `wip` (5a); 5b stopped after 11 minutes without an edit; 5c with a list of exact edits | `9964aa4` |
+| 5 | Design pass against `index.html` | `wp-frontend-builder` | In progress: first pass committed as `wip` (5a); 5b stopped after 11 minutes without an edit; 5c fixed button hover and the mobile menu colour | `9964aa4` |
 
 ## 0. Setup
 
@@ -399,14 +399,26 @@ curl -s https://lindeboom-demo.test/ | grep -o 'wp-element-button:hover[^}]*}'
 Left for a later run: the "Bestel een taart" button in the mobile panel, and a section-by-section
 comparison with screenshots.
 
-Result, interim (Mistral Large 4, Vibe 3.1.2, toolbox with #77 and #78, `awk` removed from the
-allowlist): no approval prompts in the first 20-odd commands, all allowlisted `grep`, `sed -n` and
-`wc` calls, and edits 1–4 within a few minutes, against 11 minutes without an edit in 5b.
-- `theme.json`: the button `:hover` background now sits under `color`. The served CSS shows
+Result (Mistral Large 4, Vibe 3.1.2, toolbox with #77 and #78, `awk` removed from the
+allowlist): no approval prompts, all allowlisted `grep`, `sed -n` and `wc` calls, and edits 1–4
+within a few minutes, against 11 minutes without an edit in 5b. It reported point 5 as findings
+first and asked before running the checks.
+- `theme.json`: the button `:hover` background sits under `color`. The served CSS shows
   `.wp-block-button__link:hover{background-color: var(--wp--preset--color--primary-accent);…}`.
 - `style.css`: `transition: background-color 150ms ease` on `.wp-block-button__link`, with
   `transition: none` added to the reduced-motion block.
 - `style.css`: the open mobile menu is painted `tertiary` (`#F5EBD9`) instead of `secondary`, and
   its links get `align-items: flex-start`.
+- Point 5: all 38 `var(--wp--preset--color--*)` uses in the design layer listed with the source
+  rule they port; the menu background was the only one pointing at the wrong colour.
+- Checks: `php -l` and `phpcs` clean, the curl hover rule shows `background-color`.
 
-Still running: the colour audit of the design layer (point 5) and the checks.
+Checked by hand afterwards, outside the session, in a browser: hovering the header button at
+1440px turns it from `#efe1c3` to `#e3d2ac`; at 390px the open menu is cream with the links on the
+left. Two findings:
+- **Cache:** the first look still showed the brown menu. `style.css` is enqueued with the theme
+  version (`?ver=1.0.0`, `functions.php:83`), which an edit does not change, so the browser kept
+  the old file. `woocommerce.css` right below uses `filemtime()`. Reload with Cmd+Shift+R, or
+  version `style.css` the same way.
+- **New difference:** the menu links now start at x = 0, against the screen edge; the design's
+  panel has a 1.25rem side gutter.
