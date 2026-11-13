@@ -51,18 +51,27 @@
 		"spacing": {
 			"blockGap": true,
 			"defaultSpacingSizes": false,
+			"spacingScale": { "steps": 0 },
 			"spacingSizes": [
 				{ "name": "2X-Small", "slug": "2-x-small", "size": "clamp(0.25rem, 1.5vw, 0.5rem)" },
 				{ "name": "X-Small", "slug": "x-small", "size": "clamp(0.375rem, 2vw, 0.75rem)" },
 				{ "name": "Small", "slug": "small", "size": "clamp(0.5rem, 2.5vw, 1rem)" },
 				{ "name": "Medium", "slug": "medium", "size": "clamp(1.5rem, 4vw, 2rem)" },
 				{ "name": "Large", "slug": "large", "size": "clamp(2rem, 5vw, 3rem)" },
-				{ "name": "X-Large", "slug": "x-large", "size": "clamp(3rem, 7vw, 5rem)" }
+				{ "name": "X-Large", "slug": "x-large", "size": "clamp(3rem, 7vw, 5rem)" },
+				{ "name": "20", "slug": "20", "size": "0.5rem" },
+				{ "name": "30", "slug": "30", "size": "1rem" },
+				{ "name": "40", "slug": "40", "size": "1.5rem" },
+				{ "name": "50", "slug": "50", "size": "2rem" },
+				{ "name": "60", "slug": "60", "size": "3rem" },
+				{ "name": "70", "slug": "70", "size": "4.5rem" },
+				{ "name": "80", "slug": "80", "size": "6rem" }
 			],
 			"units": [ "px", "em", "rem", "vh", "vw", "%" ]
 		},
 		"typography": {
-			"fluid": true,
+			"defaultFontSizes": false,
+			"fluid": false,
 			"fontFamilies": [
 				{
 					"name": "Body",

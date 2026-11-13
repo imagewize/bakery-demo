@@ -89,6 +89,22 @@ Forked from the Aviendha starter theme.
 }
 
 /*
+ * Front page only: the homepage pattern's sections sit flush against each
+ * other and the hero starts right under the masthead, as in index.html. The
+ * main group in templates/front-page.html carries `blockGap: 0` and the
+ * `lindeboom-home` class; the two rules below cover the flow-layout margins,
+ * because this WP version's `:root :where(.is-layout-flow) > *` rule reads the
+ * global spacing preset directly, not the container's --wp--style--block-gap.
+ */
+.wp-site-blocks > main.lindeboom-home {
+	margin-block-start: 0;
+}
+
+.lindeboom-home > * {
+	margin-block-start: 0;
+}
+
+/*
  * The WooCommerce coming-soon template wraps its `main` in the block's own
  * `.wp-block-woocommerce-coming-soon` div, so `main` is no longer a direct child
  * of `.wp-site-blocks` and the rule above cannot reach it. The wrapper is the
@@ -1312,6 +1328,7 @@ a {
 .wp-block-cover.lindeboom-hero {
 	align-items: flex-end;
 	min-height: min(70svh, 40rem) !important; /* beats the block's inline min-height */
+	padding-inline: 0; /* core's cover padding:1em would inset the inner container; the source hero runs edge to edge */
 }
 
 .wp-block-cover.lindeboom-hero::before {
@@ -1330,18 +1347,22 @@ a {
 	z-index: 1; /* above the background image, below the inner container (z 2) */
 }
 
-/* Hero (source .hero__content): the cover's inner container is a centered
- * constrained column already; it only needs the end-alignment padding. Core
- * gives the container `position: relative` but no z-index, so without z 2 the
- * scrim (z 1) paints over the text; the cream colour comes from the source's
- * .hero text, which the removed is-light class used to override. */
+/* Hero (source .hero__content / .wrap): the cover's inner container is pinned
+ * to the 1152px content column (x 144 at 1440, x 20 at 390) like every other
+ * section, instead of core's full-width 100%; it only needs the end-alignment
+ * padding on top of that. Core gives the container `position: relative` but no
+ * z-index, so without z 2 the scrim (z 1) paints over the text; the cream colour
+ * comes from the source's .hero text, which the removed is-light class used to
+ * override. */
 .lindeboom-hero .wp-block-cover__inner-container {
 	color: var(--wp--preset--color--base);
 	display: flex;
 	flex-direction: column;
 	gap: var(--wp--preset--spacing--40);
+	margin-inline: auto;
 	padding-block: 6rem var(--wp--preset--spacing--60);
 	position: relative;
+	width: min(100% - 2.5rem, 72rem);
 	z-index: 2;
 }
 
@@ -1395,6 +1416,14 @@ a {
 .wp-block-aludra-feature-cards {
 	background: none;
 	padding-block: var(--wp--preset--spacing--70) var(--wp--preset--spacing--80);
+}
+
+/* Taarten (source .wrap): the block caps its inner column at 1080px and pads
+ * it 1.25rem each side; the source grid runs the full 1152px content column
+ * (x 144 at 1440, x 20 at 390) like every other section. */
+.wp-block-aludra-feature-cards .feature-cards__inner {
+	max-width: min(100% - 2.5rem, 72rem);
+	padding-inline: 0;
 }
 
 /* Taarten (source .section-intro / h2): the block centres its header and
@@ -1473,9 +1502,14 @@ a {
 	font-weight: 420;
 }
 
+/* The !important on color is load-bearing: Aludra's `.feature-card p` paints
+ * main-accent with !important, and only a higher-specificity !important beats
+ * it (this selector is 0-2-1 against the block's 0-1-1). line-height 1.55 is
+ * the source body leading, against the block's 1.7. */
 .wp-block-aludra-feature-cards .feature-card p {
-	color: var(--wp--preset--color--contrast);
+	color: var(--wp--preset--color--contrast) !important;
 	font-size: var(--wp--preset--font-size--medium);
+	line-height: 1.55;
 	margin: 0 !important;
 }
 
@@ -2031,7 +2065,10 @@ a {
 	gap: 0;
 }
 
-.lindeboom-footer__grid {
+/* Scoped through .lindeboom-footer so the gap survives the `.wp-block-group
+ * { gap: 0 }` reset directly above: both selectors are 0-2-0, and this one
+ * comes later in the file. Source .footer-grid: 2rem (32px) between columns. */
+.lindeboom-footer .lindeboom-footer__grid {
 	display: grid;
 	gap: var(--wp--preset--spacing--50);
 }
