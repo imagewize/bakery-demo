@@ -1,0 +1,18 @@
+<label> Je naam
+    [text* naam autocomplete:name] </label>
+
+<label> Je e-mailadres
+    [email* email autocomplete:email] </label>
+
+<label> Gewenste datum
+    <span class="lindeboom-hint lindeboom-hint--inline">Bestel minimaal twee dagen vooruit.</span>
+    [date* datum] </label>
+
+<label> Welke taart wil je?
+    [select* taart first_as_label "Kies een taart" "Feestdriptaart — vanaf € 39,50" "Macarons — per 6 € 12,50" "Aardbeiencupcakes — per 6 € 15,00" "Aardbeientaart — vanaf € 32,00" "Anders, of ik twijfel nog"] </label>
+
+<label> Bericht of wensen
+    <span class="lindeboom-hint">Vul bijvoorbeeld het aantal personen of een allergie in.</span>
+    [textarea bericht] </label>
+
+[submit "Bestel een taart"]

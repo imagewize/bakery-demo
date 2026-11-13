@@ -1,0 +1,69 @@
+# Files and directories excluded from the distributed theme zip.
+# Consumed by `zip -x@.distignore` in .github/workflows/create-release.yml.
+# Directories need a /* suffix to exclude recursively.
+
+# Version control and CI
+.git/*
+.github/*
+.claude/*
+.agents/*
+/.vibe/*
+.gitignore
+.distignore
+.gitattributes
+.editorconfig
+
+# Dependencies (dev-only — the theme has no runtime Composer or npm deps)
+vendor/*
+node_modules/*
+composer.json
+composer.lock
+package.json
+package-lock.json
+
+# Tooling and scripts
+bin/*
+*.sh
+create-pr.sh
+phpcs.xml
+phpcs.xml.dist
+.phpunit.result.cache
+
+# Contributor documentation (readme.txt ships, these do not)
+CLAUDE.md
+AGENTS.md
+CONTRIBUTING.md
+README.md
+
+# Kept as a guard, not a description: there is no docs/ or designs/ directory
+# here any more. Planning documents and design mockups live in the private
+# imagewize.com repo under docs/lindeboom/ and designs/lindeboom/ (see CLAUDE.md).
+# These entries stay so that a stray file re-added here never reaches a zip.
+docs/*
+designs/
+designs/*
+
+# OS and editor cruft
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+.Spotlight-V100
+.Trashes
+__MACOSX
+.vscode/*
+.idea/*
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.sw?
+*~
+*.tmp
+*.bak
+
+# Logs and environment
+*.log
+.env
+.env.local
+.env.*.local

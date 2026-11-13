@@ -1,0 +1,2124 @@
+/*
+Theme Name: Bakkerij Lindeboom
+Theme URI: https://bakkerijlindeboom.nl
+Author: Jasper Frumau
+Author URI: https://imagewize.com
+Description: Block theme for Bakkerij Lindeboom, a family bakery in Utrecht, and a fork of the Aviendha starter theme. The homepage is one pattern composed from Aludra blocks; Aludra (and Contact Form 7 for the order form) must be installed and active.
+Requires at least: 6.6
+Tested up to: 7.1
+Requires PHP: 8.0
+Version: 1.0.0
+License: GNU General Public License v3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Text Domain: lindeboom
+Tags: full-site-editing, custom-colors, custom-logo, custom-menu, editor-style, featured-images, grid-layout, template-editing, translation-ready, wide-blocks
+
+Bakkerij Lindeboom WordPress Theme, (C) 2026 Jasper Frumau
+Bakkerij Lindeboom is distributed under the terms of the GNU GPL v3 (or later).
+Forked from the Aviendha starter theme.
+*/
+
+/*
+ * The design system lives in theme.json — this file only holds what
+ * theme.json cannot express: sticky positioning, pseudo-classes, media
+ * queries, and overrides of core block styles that ship `!important`.
+ *
+ * 1. Template parts (global)
+ * 2. Header
+ *    2.1 Sticky masthead
+ *    2.2 Scroll edge (light header)
+ *    2.3 Wordmark and logo
+ *    2.4 CTA button
+ *    2.5 Navigation underline
+ *    2.6 Overlay navigation
+ *    2.7 Account icon
+ * 3. Footer
+ * 4. Utilities
+ *    4.1 Eyebrow
+ * 5. Content rhythm
+ * 6. Single post
+ *    6.1 Post meta line
+ *    6.2 Two-column article and sticky sidebar
+ *    6.3 Prose
+ *    6.4 Post tail and author card
+ *    6.5 Sidebar widgets
+ *    6.6 Related posts
+ *    6.7 Comments
+ *    6.8 Reading-progress bar
+ * 7. Pagination
+ */
+
+/* -------------------------------------------------------------------------
+ * 1. Template parts (global)
+ * ------------------------------------------------------------------------- */
+
+/*
+ * Core's `:where(.wp-site-blocks) > *` global style adds a 24px
+ * margin-block-start to every top-level block, including the
+ * wp-block-template-part wrapper WordPress injects around header/footer —
+ * not to the .lindeboom-header--dark/.foot block inside it, so setting
+ * margin on those directly has no effect on the wrapper. Reset it for all
+ * template parts generally (same fix as Imagewize's Elayne theme uses),
+ * since no template part should carry the inter-block content gap.
+ */
+.wp-site-blocks > .wp-block-template-part {
+	margin-block-start: 0;
+}
+
+/*
+ * Pin the footer to the bottom on short pages, where it would otherwise float
+ * mid-viewport with dead space beneath it.
+ *
+ * Safe to make `.wp-site-blocks` a flex column: its children stretch to full
+ * width by default, so the constrained-layout margins that produce alignwide
+ * and alignfull still resolve against the same box they did before.
+ */
+.wp-site-blocks {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+/*
+ * `main` takes up the slack. Its background is transparent, so on an ordinary
+ * prose page the stretch is indistinguishable from the content area around it —
+ * base on base, nothing to see.
+ */
+.wp-site-blocks > main {
+	flex: 1 0 auto;
+}
+
+/*
+ * The WooCommerce coming-soon template wraps its `main` in the block's own
+ * `.wp-block-woocommerce-coming-soon` div, so `main` is no longer a direct child
+ * of `.wp-site-blocks` and the rule above cannot reach it. The wrapper is the
+ * direct child instead, and — with no background of its own — it stands in for
+ * `main` here: growing it stretches base on base, invisibly, and the footer
+ * still settles at the bottom on a short page.
+ */
+.wp-site-blocks > .wp-block-woocommerce-coming-soon {
+	flex: 1 0 auto;
+}
+
+/*
+ * Unless the page ends in a full-bleed section, where that same transparent
+ * stretch reads as a base-coloured strip below the section's own colour. Then
+ * the section itself should absorb the space instead, so its background simply
+ * continues to the footer.
+ *
+ * Growing the footer rather than `main` was the other way to hide the strip, but
+ * it is the same region either way — only the colour changes — and a viewport's
+ * worth of it in the footer's tertiary reads as an enormous footer on a short
+ * page (622px of it on the Sample Page). Absorbing the space is what removes it.
+ *
+ * Scoped with `:has()` rather than applied to every page for two reasons: `float`
+ * is ignored on flex items, so an `alignleft`/`alignright` image inside
+ * `entry-content` would stop wrapping its text — a real cost on prose pages, and
+ * one they get nothing back for, since their filler is already invisible. Pages
+ * that end in an `alignfull` section are section-built and do not float. Where
+ * `:has()` is unsupported the chain simply never engages and the base-coloured
+ * strip comes back, which is the unstyled behaviour anyway.
+ */
+.wp-site-blocks > main:has(> .entry-content > :last-child.alignfull),
+.wp-site-blocks > main:has(> .entry-content > :last-child.alignfull) > .entry-content {
+	display: flex;
+	flex-direction: column;
+}
+
+.wp-site-blocks > main:has(> .entry-content > :last-child.alignfull) > .entry-content,
+.wp-site-blocks > main:has(> .entry-content > :last-child.alignfull) > .entry-content > :last-child {
+	flex: 1 0 auto;
+}
+
+/* -------------------------------------------------------------------------
+ * 2. Header
+ * ------------------------------------------------------------------------- */
+
+/* 2.1 Sticky masthead
+ * ------------------------------------------------------------------------- */
+
+/*
+ * Both variants stick. The rules below are scoped to `.lindeboom-header` rather
+ * than `.lindeboom-header--dark` wherever they are tonal-neutral, so the light
+ * header is a colour alternative rather than a header with features missing.
+ */
+.lindeboom-header {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+}
+
+/*
+ * When the header part renders inside a wrapper element (template-part
+ * `tagName`, or the block editor's part boundary), the wrapper is only as
+ * tall as the header itself, so a sticky child has no scroll range to move
+ * within and never sticks. Make the wrapper the sticky element in that case.
+ */
+.wp-block-template-part:has(> .lindeboom-header) {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+}
+
+/* 2.2 Scroll edge (light header)
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The light header sits on `base` and so does the page under it, so a resting
+ * border has no tonal change to describe — it reads as a scratch rather than a
+ * boundary. Instead the edge appears only once the page has moved, when the
+ * sticky masthead genuinely is above something.
+ *
+ * Done with a scroll-driven animation rather than a scroll listener because the
+ * theme ships no JavaScript. Where `scroll()` is unsupported the header simply
+ * stays flush, which is the rest state we are choosing anyway — so no fallback
+ * is needed. The dark header is excluded: it carries its own light hairline in
+ * the block markup, and a `border-light` shadow under it would read as a seam.
+ *
+ * The colours are literal because a keyframe needs the transparent stop to be
+ * the same colour at zero alpha: `#e5ded2` is `border-light`, `#211c1a` is
+ * `contrast`. Same hex-with-alpha idiom the dark header's border uses.
+ */
+@supports (animation-timeline: scroll()) {
+	.lindeboom-header:not(.lindeboom-header--dark) {
+		animation: lindeboom-header-edge linear both;
+		animation-range: 0 8px;
+		animation-timeline: scroll(root block);
+	}
+}
+
+@keyframes lindeboom-header-edge {
+	from {
+		box-shadow:
+			0 1px 0 0 #e5ded200,
+			0 8px 24px -18px #211c1a00;
+	}
+
+	to {
+		box-shadow:
+			0 1px 0 0 #e5ded2,
+			0 8px 24px -18px #211c1a80;
+	}
+}
+
+/* 2.3 Wordmark and logo
+ * ------------------------------------------------------------------------- */
+
+.lindeboom-header .wp-block-site-title a {
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 800;
+	font-size: 1.15rem;
+	letter-spacing: -0.03em;
+	text-decoration: none;
+}
+
+.lindeboom-header .wp-block-site-title a:hover {
+	text-decoration: none;
+}
+
+/* For the Lindeboom marketing site: hide logo when using text wordmark */
+body .lindeboom-header--dark .wp-block-site-logo {
+	display: none;
+}
+
+/* 2.4 CTA button
+ * ------------------------------------------------------------------------- */
+
+/*
+ * Shape and type are shared; colour is not. The light header uses the filled
+ * `primary` button straight from theme.json (`styles.elements.button`), so it
+ * needs no colour rules here at all — including hover, which theme.json already
+ * takes to `primary-alt`. Only the dark header's outline treatment is below.
+ */
+.lindeboom-header__cta .wp-block-button__link {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--x-small);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	padding: 0.5rem 0.9rem;
+	border-radius: 999px;
+	white-space: nowrap;
+	transition: background-color 0.18s, border-color 0.18s, color 0.18s;
+}
+
+/*
+ * Drop the CTA below 600px, where the wordmark, the hamburger and the two icons
+ * leave less than the button's ~150px and it runs off the right edge. Above that
+ * it always has room — §2.7 keeps the navigation collapsed until 1024px, and by
+ * the time the menu goes inline the row is wide enough for both.
+ *
+ * The `.wp-block-buttons >` part is load-bearing, not decoration: core emits
+ * `.wp-block-buttons > .wp-block-button { display: inline-block }`, and a lone
+ * class selector here loses to it and leaves the button visible.
+ */
+@media (max-width: 599px) {
+	.lindeboom-header .wp-block-buttons > .lindeboom-header__cta {
+		display: none;
+	}
+}
+
+/* 2.5 Navigation underline
+ * ------------------------------------------------------------------------- */
+
+/*
+ * Wipe-in underline on hover, held open for the current page. `currentColor`
+ * rather than `primary` so the same rule serves both headers — primary against
+ * the dark header's `main` background is too low-contrast to read as a marker.
+ *
+ * Hooked on `[aria-current="page"]`, which core puts on the link itself, rather
+ * than the `.current-menu-item` class it puts on the `li`. Scoped to the
+ * top-level container so submenu items do not pick it up.
+ */
+.lindeboom-header .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content {
+	position: relative;
+	text-decoration: none;
+}
+
+.lindeboom-header .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after {
+	background: currentColor;
+	bottom: -0.25em;
+	content: "";
+	height: 2px;
+	left: 0;
+	position: absolute;
+	right: 0;
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform 0.16s ease;
+}
+
+.lindeboom-header .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover::after,
+.lindeboom-header .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content[aria-current="page"]::after {
+	transform: scaleX(1);
+}
+
+/*
+ * The mobile overlay stacks the same links full-width, where an underline
+ * spanning the whole row reads as a divider rather than a marker.
+ */
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content::after {
+	content: none;
+}
+
+.lindeboom-header--dark .lindeboom-header__cta .wp-block-button__link {
+	border-color: rgb(250 247 242 / 0.3);
+}
+
+.lindeboom-header--dark .lindeboom-header__cta .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--base);
+	/* !important needed: the saved button markup carries has-base-color,
+	 * and core emits `.has-base-color { color: ... !important }` — a plain
+	 * override here loses to that, leaving white text on the white hover
+	 * background. */
+	color: var(--wp--preset--color--main) !important;
+	border-color: var(--wp--preset--color--base);
+}
+
+/* 2.6 Actions cluster order
+ * ------------------------------------------------------------------------- */
+
+/*
+ * `.lindeboom-header__actions` (parts/header.html, parts/header-dark.html)
+ * holds the icon/CTA group and the navigation block in that source order, so
+ * the hamburger renders last — rightmost, with the CTA immediately before
+ * it — which is what a collapsed header (below 1024px, see §2.7) wants.
+ *
+ * Once the navigation goes inline at 1024px+, that same order would put the
+ * link row after the icons and CTA, which reads backwards for a desktop
+ * masthead — so only there, pull it back in front with `order`. The page-list
+ * fallback stays a hamburger at every width (§2.7), so it keeps its place.
+ */
+@media (min-width: 1024px) {
+	.lindeboom-header__actions .wp-block-navigation:not(:has(.wp-block-page-list)) {
+		order: -1;
+	}
+}
+
+/* 2.7 Overlay navigation
+ * ------------------------------------------------------------------------- */
+
+/*
+ * Raise the overlay breakpoint from core's 600px to 1024px.
+ *
+ * `overlayMenu: "mobile"` only takes the three keywords, so the width at which
+ * the navigation collapses is not configurable — core hardcodes it in two rules
+ * inside `@media (min-width: 600px)`: one flips `.wp-block-navigation__responsive-container`
+ * from the hidden fixed-position overlay to an inline block, the other hides the
+ * hamburger. Between 600px and 1024px that left the inline menu competing with
+ * the wordmark, the cart and account icons and the CTA, and the row wrapped — a
+ * 105px-tall masthead on a tablet.
+ *
+ * Restoring those two declarations to their base values across the band is the
+ * whole fix: everything else about the overlay, including the fixed positioning
+ * it needs when open, already lives outside the media query.
+ *
+ * 1024px rather than a rounder 960px because the masthead's own contents decide
+ * it: this menu's six items plus the wordmark, icons and CTA measure 973px, so
+ * at 960px the row still wrapped. A longer menu would want this raised again.
+ */
+@media (min-width: 600px) and (max-width: 1023px) {
+	.lindeboom-header .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
+		display: none;
+	}
+
+	.lindeboom-header .wp-block-navigation__responsive-container-open:not(.always-shown) {
+		display: flex;
+	}
+}
+
+/*
+ * Keep the inline menu on one line.
+ *
+ * Core lets the top-level list wrap, so a menu wider than the space beside the
+ * wordmark broke into two or three rows and the masthead grew with it. The
+ * header is built for a short, curated menu, so hold the list and each label
+ * on a single line instead.
+ */
+@media (min-width: 1024px) {
+	.lindeboom-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container {
+		flex-wrap: nowrap;
+	}
+
+	.lindeboom-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation-item__content {
+		white-space: nowrap;
+	}
+
+	.lindeboom-header .wp-block-site-title {
+		white-space: nowrap;
+	}
+}
+
+/*
+ * No menu assigned: collapse to the hamburger at every width.
+ *
+ * Until a menu is chosen, core fills the navigation block with a page list —
+ * every published page, nested or not. That list has no upper bound (a site
+ * with the Theme Unit Test data has two dozen top-level pages), so no
+ * breakpoint can keep it on one line beside the wordmark. The page list is the
+ * one case we can detect in CSS (`.wp-block-page-list` only renders for it), so
+ * route it to the overlay, which handles any length. Once a menu is assigned,
+ * the inline menu above takes over again.
+ *
+ * Same two declarations as the tablet band above, applied from 600px up.
+ * Where `:has()` is unsupported the fallback simply stays inline.
+ */
+@media (min-width: 600px) {
+	.lindeboom-header .wp-block-navigation:has(.wp-block-page-list) .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
+		display: none;
+	}
+
+	.lindeboom-header .wp-block-navigation:has(.wp-block-page-list) .wp-block-navigation__responsive-container-open:not(.always-shown) {
+		display: flex;
+	}
+}
+
+/*
+ * Core shrink-wraps the overlay's link list to its own content width, then
+ * right-aligns that shrink-wrapped box against the modal's already-padded
+ * edge (`align-items: flex-end` on the container-content, matching the
+ * collapsed hamburger's own justification) — the same edge inset the close
+ * button sits inside. Right-anchoring a shrink-wrapped box that way is
+ * fragile: anything that widens the list past its measured content width
+ * (a longer translated label, a larger accessibility text-size setting)
+ * pushes its edge past the modal boundary with no margin to absorb it, and
+ * the link reads as clipped against the screen edge.
+ *
+ * Stretch the list to the full padded content width instead, then
+ * right-align each link's own text inside that guaranteed box. The list can
+ * no longer be wider than the box it's aligned within, so its edge — and
+ * the close button's — stay pinned to the same padded inset regardless of
+ * label length.
+ */
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content {
+	align-items: stretch;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
+	text-align: right;
+}
+
+/*
+ * Core insets the overlay (and, with it, the close button pinned to its
+ * top-right corner) from the screen edge via the `--wp--style--root--padding-*`
+ * custom properties that `settings.useRootPaddingAwareAlignments` is meant to
+ * supply. Here they resolve to nothing usable, so the overlay's own padding
+ * collapses to 0 and the close button lands flush against the literal
+ * top-right corner of the screen — well above and outside of where the
+ * hamburger it replaces actually sits.
+ *
+ * Give the overlay the header's own padding directly instead of relying on
+ * that chain, so the close button opens right where the hamburger was. This
+ * also becomes the right-hand inset the link list (§ above) stretches
+ * against, keeping both edges aligned.
+ */
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open {
+	padding-top: var(--wp--preset--spacing--small);
+	padding-right: var(--wp--preset--spacing--small);
+}
+
+/*
+ * The dark header's navigation has no background of its own, so core's
+ * `.wp-block-navigation:not(.has-background) …is-menu-open` rule paints the
+ * mobile overlay white — while the block's `textColor: "base"` keeps the
+ * links and close button white too, leaving the open menu unreadable.
+ *
+ * Scoped to `.is-menu-open`: with `overlayMenu: "mobile"` the container
+ * carries no `hidden-by-default` class, so above 600px core reuses that same
+ * element to render the inline desktop nav. An unscoped rule here would
+ * darken those desktop links against the dark masthead.
+ *
+ * !important needed: the navigation markup carries has-base-color, and core
+ * emits `.has-base-color { color: ... !important }`.
+ */
+.lindeboom-header--dark .wp-block-navigation__responsive-container.is-menu-open,
+.lindeboom-header--dark .wp-block-navigation__responsive-container.is-menu-open * {
+	color: var(--wp--preset--color--main) !important;
+}
+
+/* 2.8 Account icon
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The customer-account block renders as a link, so it picks up the global
+ * `primary` link colour — rose, which is too low-contrast on the dark header's
+ * `main` background and reads as a different element from the mini cart beside
+ * it. Inherit the surrounding header text colour instead, so the account icon
+ * follows the cart in both headers: `base` on the dark header, `contrast` on
+ * the light one. The icon's SVG paints in `currentColor`, so it comes along.
+ */
+.lindeboom-header .wp-block-woocommerce-customer-account a {
+	color: inherit;
+}
+
+/*
+ * Size the account icon. WooCommerce ships its sizing rule against
+ * `.wc-block-customer-account__account-icon`, but the block actually renders
+ * the SVG with `class="icon"` (its `iconClass` default) — the two never match,
+ * so the icon collapses to zero and is invisible in every display mode. Give
+ * it an explicit size here; the `:not()` leaves the dropdown caret, which
+ * carries its own dimensions, alone. `em` so it tracks the header font size,
+ * matching WooCommerce's intended 1.5em.
+ */
+.lindeboom-header .wp-block-woocommerce-customer-account svg:not(.wc-block-customer-account__caret) {
+	height: 1.5em;
+	width: 1.5em;
+}
+
+/* -------------------------------------------------------------------------
+ * 3. Footer
+ * ------------------------------------------------------------------------- */
+
+/*
+ * Two rows: the brand (site title and tagline) with the footer menu beside it,
+ * then a hairline and the credits. Both rows are core flex groups that wrap, so
+ * the layout holds at any width; the rules below only set proportions and
+ * colour, and stack the rows on narrow screens (§3.1).
+ *
+ * The site title and tagline are blocks rather than literal text, so the footer
+ * names whatever site it is installed on.
+ */
+.foot {
+	color: var(--wp--preset--color--secondary);
+}
+
+.foot__top {
+	gap: var(--wp--preset--spacing--medium);
+}
+
+.foot__brand {
+	flex: 0 1 18rem;
+	gap: 0.35rem;
+}
+
+.foot__brand .wp-block-site-title {
+	color: var(--wp--preset--color--contrast);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--medium);
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.foot__brand .wp-block-site-tagline {
+	margin: 0;
+}
+
+.foot__brand .wp-block-site-tagline:empty {
+	display: none;
+}
+
+/*
+ * The menu takes the space the brand leaves and wraps inside it, so a long
+ * menu — or the page-list fallback on a site with no menu assigned — becomes a
+ * tidy right-aligned block rather than running the full width of the footer.
+ */
+.foot .wp-block-navigation {
+	flex: 1 1 24rem;
+	margin: 0;
+	padding: 0;
+}
+
+.foot .wp-block-navigation__container,
+.foot .wp-block-navigation .wp-block-page-list {
+	column-gap: 1.5rem;
+	display: flex;
+	flex-wrap: wrap;
+	row-gap: 0.6rem;
+	justify-content: flex-end;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.foot .wp-block-navigation-item {
+	margin: 0;
+	padding: 0;
+}
+
+/*
+ * The footer lists top-level items only. Child pages stay reachable through
+ * the header menu; in a footer a dropdown opening above the fold of the page
+ * end reads as a glitch rather than a menu.
+ */
+.foot .wp-block-navigation__submenu-container,
+.foot .wp-block-navigation__submenu-icon,
+.foot .wp-block-page-list__submenu-icon {
+	display: none;
+}
+
+.foot a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.foot a:hover,
+.foot a:focus-visible {
+	color: var(--wp--preset--color--primary);
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.foot__brand .wp-block-site-title a {
+	color: inherit;
+}
+
+.foot__bottom {
+	border-top: 1px solid var(--wp--preset--color--border-light);
+	gap: 0.5rem 1.5rem;
+	margin-top: var(--wp--preset--spacing--medium);
+	padding-top: var(--wp--preset--spacing--small);
+}
+
+.foot__bottom p {
+	margin: 0;
+}
+
+/* 3.1 Narrow footer layout
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The footer navigation never collapses into a hamburger — the block itself
+ * sets `overlayMenu: "never"` (see parts/footer.html), so core renders a plain
+ * list at every width and emits no overlay markup. Below tablet width the brand
+ * and menu stack, and the menu turns left-aligned under the brand.
+ *
+ * With no assigned menu the nav falls back to a page list, which core nests as
+ * `__container > .wp-block-page-list > li` — so both levels need the alignment.
+ */
+@media (max-width: 781px) {
+	.foot__top {
+		flex-direction: column;
+	}
+
+	.foot__brand,
+	.foot .wp-block-navigation {
+		flex-basis: auto;
+	}
+
+	.foot .wp-block-navigation__container,
+	.foot .wp-block-navigation .wp-block-page-list {
+		justify-content: flex-start;
+	}
+}
+
+/* -------------------------------------------------------------------------
+ * 4. Utilities
+ * ------------------------------------------------------------------------- */
+
+/* 4.1 Eyebrow
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The theme's one repeated structural device: a mono, letter-spaced label
+ * introduced by a short rule. Add it as a class on any block that carries a
+ * short piece of text — a paragraph, a post-terms block — to mark a section
+ * without spending a heading on it.
+ *
+ * theme.json can't express it: the leading rule is a pseudo-element, and the
+ * class has to be available to arbitrary blocks rather than to one block type.
+ */
+.lindeboom-eyebrow {
+	align-items: baseline;
+	color: var(--wp--preset--color--main-accent);
+	display: flex;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xx-small);
+	font-weight: 600;
+	gap: 0.6rem;
+	letter-spacing: 0.14em;
+	line-height: 1.4;
+	text-transform: uppercase;
+}
+
+.lindeboom-eyebrow::before {
+	background: currentColor;
+	content: "";
+	flex: none;
+	height: 1px;
+	translate: 0 -0.28em;
+	width: 1.5rem;
+}
+
+.lindeboom-eyebrow a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.lindeboom-eyebrow a:hover {
+	color: var(--wp--preset--color--primary);
+}
+
+/* -------------------------------------------------------------------------
+ * 5. Content rhythm
+ * ------------------------------------------------------------------------- */
+
+/*
+ * theme.json sets the global `blockGap` that separates blocks, and an `h2` top
+ * margin that opens a section up. What it cannot express is the other half of
+ * the pairing — a heading should sit *close* to the block it introduces, which
+ * needs a sibling selector.
+ *
+ * Without this the full block gap lands between a heading and its own first
+ * paragraph, and the heading reads as belonging to the text above it.
+ */
+.entry-content :is(h2, h3, h4, h5, h6) + * {
+	margin-block-start: var(--wp--preset--spacing--small);
+}
+
+/* -------------------------------------------------------------------------
+ * 6. Single post
+ *
+ * All scoped to the `.single` body class core adds on single posts, so none
+ * of it leaks onto pages or archives. Layout primitives (the sticky sidebar,
+ * the two-column collapse) and pseudo-elements live here because theme.json
+ * cannot express them; colours and type reference the presets as everywhere
+ * else.
+ * ------------------------------------------------------------------------- */
+
+/* 6.1 Post meta line
+ * ------------------------------------------------------------------------- */
+
+/*
+ * A mono, letter-spaced byline under the title: avatar, author, date. Built
+ * from core blocks (avatar / post-author-name / post-date) rather than one
+ * block, so each piece can be styled and a reading-time block can slot in
+ * later without disturbing the rest.
+ */
+.lindeboom-post-meta {
+	color: var(--wp--preset--color--main-accent);
+	font-family: var(--wp--preset--font-family--body);
+	gap: 0.55rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.lindeboom-post-meta .wp-block-avatar {
+	line-height: 0;
+}
+
+.lindeboom-post-meta .wp-block-avatar img {
+	border-radius: 999px;
+}
+
+/* "By" reads muted (inherits the block colour); the name link takes contrast. */
+.lindeboom-post-meta .wp-block-post-author-name::before {
+	content: "By ";
+}
+
+.lindeboom-post-meta .wp-block-post-author-name a {
+	color: var(--wp--preset--color--contrast);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+/* A hairline dot separates the date from the author; the flex gap does the spacing. */
+.lindeboom-post-meta .wp-block-post-date::before {
+	color: var(--wp--preset--color--sand-deep);
+	content: "·";
+	padding-right: 0.55rem;
+}
+
+.lindeboom-post-meta .wp-block-post-date a,
+.lindeboom-post-meta .wp-block-post-date time {
+	color: inherit;
+	text-decoration: none;
+}
+
+/* The lede under the title: colour and size come from the block; cap the measure. */
+.lindeboom-post-lede {
+	max-width: 56ch;
+}
+
+/* 6.2 Two-column article and sticky sidebar
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The content column has no width (it grows); the sidebar column is a fixed
+ * 300px. Two columns that both carry a percentage summing to 100% wrap onto
+ * two rows once the column gap is added, so the grow-plus-fixed pairing is
+ * what keeps them on one row.
+ *
+ * Sticky is not a core group support, so the inner sidebar group carries a
+ * class and the positioning lives here. The offset clears the sticky masthead
+ * (~66px) plus a little breathing room.
+ */
+.single .lindeboom-sidebar__sticky {
+	position: sticky;
+	top: 5.5rem;
+}
+
+/*
+ * Collapse to one column below 980px — earlier than core's own 782px column
+ * stacking, because the 300px sidebar beside a shrinking content column gets
+ * cramped before then. Once stacked, the sidebar drops its sticky behaviour
+ * (nothing to stick against in a single column) and sits below the article.
+ */
+@media (max-width: 980px) {
+	.single .lindeboom-article > .wp-block-column {
+		flex-basis: 100%;
+	}
+
+	.single .lindeboom-sidebar__sticky {
+		position: static;
+	}
+}
+
+/* 6.3 Prose
+ * ------------------------------------------------------------------------- */
+
+/*
+ * theme.json and §5 handle block rhythm; these are the post-body flourishes
+ * that need element or pseudo selectors: a display-face pull quote, primary
+ * list markers, and a drop cap on a post that opens with a paragraph.
+ */
+.single .entry-content blockquote {
+	border-left: 3px solid var(--wp--preset--color--primary);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--large);
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1.3;
+	margin-inline: 0;
+	padding: var(--wp--preset--spacing--small) 0 var(--wp--preset--spacing--small) var(--wp--preset--spacing--medium);
+}
+
+.single .entry-content li::marker {
+	color: var(--wp--preset--color--primary);
+}
+
+/*
+ * Drop cap only when the very first child is a paragraph — `:first-child`
+ * rather than `:first-of-type`, so a post opening with a heading, list or
+ * image is left alone rather than having a paragraph further down capitalised.
+ */
+.single .entry-content > p:first-child::first-letter {
+	color: var(--wp--preset--color--primary);
+	float: left;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 3.1em;
+	font-weight: 700;
+	line-height: 0.78;
+	padding: 0.06em 0.12em 0 0;
+}
+
+/* 6.4 Post tail and author card
+ * ------------------------------------------------------------------------- */
+
+/* Tags render as mono outline pills (post-terms with an empty separator). */
+.single .lindeboom-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.single .lindeboom-tags a {
+	border: 1px solid var(--wp--preset--color--border-light);
+	border-radius: 999px;
+	color: var(--wp--preset--color--secondary);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xx-small);
+	letter-spacing: 0.06em;
+	padding: 0.35em 0.7em;
+	text-decoration: none;
+	transition: border-color 0.14s, color 0.14s;
+}
+
+.single .lindeboom-tags a:hover {
+	border-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary);
+}
+
+/* The author card is core/post-author; background/padding/radius are block attrs. */
+.single .lindeboom-author-card {
+	align-items: flex-start;
+	display: flex;
+	gap: var(--wp--preset--spacing--small);
+}
+
+.single .lindeboom-author-card .wp-block-post-author__avatar img {
+	border-radius: 999px;
+}
+
+.single .lindeboom-author-card .wp-block-post-author__byline {
+	color: var(--wp--preset--color--main-accent);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xx-small);
+	letter-spacing: 0.1em;
+	margin: 0;
+	text-transform: uppercase;
+}
+
+.single .lindeboom-author-card .wp-block-post-author__name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--medium);
+	font-weight: 600;
+	margin: 0.15em 0 0.3em;
+}
+
+.single .lindeboom-author-card .wp-block-post-author__bio {
+	color: var(--wp--preset--color--secondary);
+	font-size: var(--wp--preset--font-size--small);
+	margin: 0;
+}
+
+/* 6.5 Sidebar widgets
+ * ------------------------------------------------------------------------- */
+
+/* A mono label with a hairline under it, distinct from the display headings. */
+.single .lindeboom-widget-title {
+	border-bottom: 1px solid var(--wp--preset--color--border-light);
+	color: var(--wp--preset--color--main-accent);
+	font-family: var(--wp--preset--font-family--body);
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	margin-bottom: var(--wp--preset--spacing--small);
+	padding-bottom: var(--wp--preset--spacing--2-x-small);
+	text-transform: uppercase;
+}
+
+/* Recent (core/latest-posts) — title over a mono date, hairline between items. */
+.single .lindeboom-mini-posts {
+	list-style: none;
+	margin: 0;
+	padding-left: 0;
+}
+
+.single .lindeboom-mini-posts li {
+	border-bottom: 1px solid var(--wp--preset--color--border-light);
+	padding-block: var(--wp--preset--spacing--x-small);
+}
+
+.single .lindeboom-mini-posts li:last-child {
+	border-bottom: 0;
+}
+
+.single .lindeboom-mini-posts a {
+	color: var(--wp--preset--color--contrast);
+	display: block;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	line-height: 1.3;
+	text-decoration: none;
+}
+
+.single .lindeboom-mini-posts a:hover {
+	color: var(--wp--preset--color--primary);
+}
+
+.single .lindeboom-mini-posts .wp-block-latest-posts__post-date {
+	color: var(--wp--preset--color--main-accent);
+	display: block;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xx-small);
+	letter-spacing: 0.06em;
+	margin-top: 0.15em;
+}
+
+/* Topics (core/categories) — a plain hairline-separated list. */
+.single .lindeboom-topics {
+	list-style: none;
+	margin: 0;
+	padding-left: 0;
+}
+
+.single .lindeboom-topics li {
+	border-bottom: 1px solid var(--wp--preset--color--border-light);
+	padding-block: 0.3rem;
+}
+
+.single .lindeboom-topics li:last-child {
+	border-bottom: 0;
+}
+
+.single .lindeboom-topics a {
+	color: var(--wp--preset--color--secondary);
+	font-size: var(--wp--preset--font-size--small);
+	text-decoration: none;
+}
+
+.single .lindeboom-topics a:hover {
+	color: var(--wp--preset--color--primary);
+}
+
+/*
+ * Sidebar CTA button: base on main, inverting the theme.json primary button.
+ * The named-colour classes core emits carry `!important`, so the hover has to
+ * as well to win — same idiom the dark header's CTA hover uses (§2.5).
+ */
+.single .lindeboom-aside-cta .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--white) !important;
+	color: var(--wp--preset--color--main) !important;
+}
+
+/* 6.6 Related posts
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The query loop renders a grid of <li> cards. The featured image sits flush
+ * to the card's top edge (card `overflow: hidden` clips it to the radius); the
+ * text blocks carry their own inline padding. A card without a featured image
+ * keeps its top spacing from the eyebrow's own top margin, so both cases read.
+ */
+.single .lindeboom-related__grid .wp-block-post-template > li {
+	background: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--border-light);
+	border-radius: var(--wp--preset--border-radius--lg);
+	overflow: hidden;
+	padding-bottom: var(--wp--preset--spacing--medium);
+	transition: transform 0.16s, box-shadow 0.16s, border-color 0.16s;
+}
+
+.single .lindeboom-related__grid .wp-block-post-template > li:hover {
+	border-color: var(--wp--preset--color--sand-deep);
+	box-shadow: 0 16px 32px -22px rgb(33 28 26 / 0.55);
+	transform: translateY(-3px);
+}
+
+.single .lindeboom-related__grid .wp-block-post-featured-image {
+	margin: 0;
+}
+
+.single .lindeboom-related__grid .wp-block-post-featured-image img {
+	aspect-ratio: 16 / 10;
+	border-radius: 0;
+	object-fit: cover;
+	width: 100%;
+}
+
+.single .lindeboom-related__grid :is(.wp-block-post-terms, .wp-block-post-title, .wp-block-post-excerpt) {
+	padding-inline: var(--wp--preset--spacing--medium);
+}
+
+/* 6.7 Comments
+ * ------------------------------------------------------------------------- */
+
+.single .lindeboom-comments .wp-block-comment-template {
+	list-style: none;
+	margin-top: var(--wp--preset--spacing--large);
+	padding-left: 0;
+}
+
+.single .lindeboom-comments .wp-block-comment-template > li {
+	border-bottom: 1px solid var(--wp--preset--color--border-light);
+	padding-block: var(--wp--preset--spacing--medium);
+}
+
+.single .lindeboom-comments .wp-block-avatar img {
+	border-radius: 999px;
+}
+
+.single .lindeboom-comment__meta {
+	gap: 0.6rem;
+}
+
+.single .lindeboom-comment__meta .wp-block-comment-author-name {
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 600;
+}
+
+.single .lindeboom-comment__meta .wp-block-comment-author-name a {
+	text-decoration: none;
+}
+
+.single .lindeboom-comment__meta .wp-block-comment-date,
+.single .lindeboom-comment__meta .wp-block-comment-date a {
+	color: var(--wp--preset--color--main-accent);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xx-small);
+	letter-spacing: 0.06em;
+	text-decoration: none;
+}
+
+/*
+ * Comment form. Core renders the browser-default field: a white box with a
+ * sharp grey border, which reads as a foreign element on the cream page. Put
+ * the fields on `base` with a hairline border and the theme radius, and give
+ * their labels the same mono treatment the sidebar widgets and meta line use,
+ * so the form belongs to the design rather than the browser.
+ */
+.single .lindeboom-comments .comment-form label {
+	color: var(--wp--preset--color--main-accent);
+	display: block;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xx-small);
+	letter-spacing: 0.1em;
+	margin-bottom: var(--wp--preset--spacing--2-x-small);
+	text-transform: uppercase;
+}
+
+.single .lindeboom-comments .comment-form :is(textarea, input[type="text"], input[type="email"], input[type="url"]) {
+	background: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--custom--color--control-border);
+	border-radius: var(--wp--preset--border-radius--md);
+	/* Keep padding and border inside the 100% width. Core's comments-form
+	   block styles already set this, but without it the fields would overflow
+	   the column on phones, as the product review form's did. */
+	box-sizing: border-box;
+	color: var(--wp--preset--color--contrast);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--base);
+	padding: 0.75em 0.9em;
+	width: 100%;
+}
+
+.single .lindeboom-comments .comment-form textarea {
+	min-height: 130px;
+	resize: vertical;
+}
+
+/*
+ * `:focus-visible` rather than `:focus` so a pointer click doesn't ring the
+ * field, and a real outline rather than the border swap this used to do — see
+ * the matching note on the catalog sorting select in `woocommerce.css`.
+ */
+.single .lindeboom-comments .comment-form :is(textarea, input[type="text"], input[type="email"], input[type="url"]):focus-visible {
+	border-color: var(--wp--preset--color--primary);
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.single .lindeboom-comments .comment-form ::placeholder {
+	color: var(--wp--preset--color--main-accent);
+	opacity: 1;
+}
+
+/* 6.8 Reading-progress bar
+ * ------------------------------------------------------------------------- */
+
+/*
+ * A hairline under the masthead that fills as the page scrolls. Driven by a
+ * scroll timeline rather than a scroll listener, for the same reason §2.2's
+ * header edge is: the theme ships no JavaScript, and where `scroll()` is
+ * unsupported the bar simply never appears — the rest state we would choose
+ * anyway. Scoped to `.single` so it is a reading affordance for posts only.
+ *
+ * Anchored to `.lindeboom-header`, which §2.1 already makes sticky (hence
+ * positioned), so the absolute bar sits on its bottom edge.
+ */
+@supports (animation-timeline: scroll()) {
+	.single .lindeboom-header::after {
+		animation: lindeboom-read-progress linear both;
+		animation-timeline: scroll(root block);
+		background: var(--wp--preset--color--primary);
+		bottom: 0;
+		content: "";
+		height: 2px;
+		left: 0;
+		position: absolute;
+		transform: scaleX(0);
+		transform-origin: left;
+		width: 100%;
+	}
+}
+
+@keyframes lindeboom-read-progress {
+	to {
+		transform: scaleX(1);
+	}
+}
+
+/* -------------------------------------------------------------------------
+ * 7. Pagination
+ *
+ * Core leaves query pagination as bare inline links: a "1 2 3" run of
+ * underlined numbers with the next link floating beside it. Give every page
+ * link — numbers and previous/next alike — the same pill shape the theme's
+ * buttons use, so the row reads as a control. The current page inverts the
+ * body text pair — `contrast` fill, `base` text — which every style variation
+ * already has to keep legible, light palette or dark (Twilight).
+ *
+ * The row also gets real space above and below. Without it the last post sat
+ * a few pixels over the numbers and the numbers flush on the footer, since
+ * `main` carries no bottom padding of its own. Set here rather than as block
+ * margin attributes, which query-pagination does not render on the front end.
+ * ------------------------------------------------------------------------- */
+
+.wp-block-query-pagination {
+	align-items: center;
+	font-size: var(--wp--preset--font-size--small);
+	gap: 0.5rem;
+	margin-block-start: var(--wp--preset--spacing--large);
+	/*
+	 * Padding, not margin: pagination is the query's last child, and core's
+	 * `:root :where(.is-layout-flow) > :last-child` zeroes its end margin with
+	 * more specificity than this selector has.
+	 */
+	padding-block-end: var(--wp--preset--spacing--x-large);
+}
+
+.wp-block-query-pagination-numbers {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	justify-content: center;
+}
+
+.wp-block-query-pagination .page-numbers,
+.wp-block-query-pagination .wp-block-query-pagination-previous,
+.wp-block-query-pagination .wp-block-query-pagination-next {
+	align-items: center;
+	border: 1px solid var(--wp--preset--color--border-light);
+	border-radius: var(--wp--preset--border-radius--pill);
+	box-sizing: border-box;
+	color: var(--wp--preset--color--contrast);
+	display: inline-flex;
+	gap: 0.4rem;
+	justify-content: center;
+	line-height: 1;
+	min-height: 2.5rem;
+	min-width: 2.5rem;
+	padding: 0 0.85rem;
+	text-decoration: none;
+	transition: border-color 0.15s, background-color 0.15s;
+}
+
+/* Core sets its own margin on the arrows, which would double the gap. */
+.wp-block-query-pagination .wp-block-query-pagination-previous-arrow,
+.wp-block-query-pagination .wp-block-query-pagination-next-arrow {
+	margin: 0;
+}
+
+.wp-block-query-pagination a.page-numbers:hover,
+.wp-block-query-pagination .wp-block-query-pagination-previous:hover,
+.wp-block-query-pagination .wp-block-query-pagination-next:hover {
+	background-color: var(--wp--preset--color--tertiary);
+	border-color: var(--wp--preset--color--contrast);
+	color: var(--wp--preset--color--contrast);
+}
+
+.wp-block-query-pagination .page-numbers.current {
+	background-color: var(--wp--preset--color--contrast);
+	border-color: var(--wp--preset--color--contrast);
+	color: var(--wp--preset--color--base);
+	font-weight: 600;
+}
+
+.wp-block-query-pagination .page-numbers.dots {
+	border-color: transparent;
+	min-width: auto;
+	padding: 0 0.25rem;
+}
+
+/*
+ * On a phone the two text labels plus a run of numbers no longer fit on one
+ * row, and the control broke onto three. Below 600px the previous/next links
+ * become arrow-only circles the size of a page number. `font-size: 0` hides
+ * the label visually but leaves it in the accessibility tree, so the link keeps
+ * its accessible name ("Previous Page"); the arrow is `aria-hidden` in core's
+ * markup and gets its size back explicitly.
+ */
+@media (max-width: 599px) {
+	.wp-block-query-pagination .wp-block-query-pagination-previous,
+	.wp-block-query-pagination .wp-block-query-pagination-next {
+		font-size: 0;
+		padding: 0;
+	}
+
+	.wp-block-query-pagination .wp-block-query-pagination-previous-arrow,
+	.wp-block-query-pagination .wp-block-query-pagination-next-arrow {
+		font-size: var(--wp--preset--font-size--base);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-query-pagination .page-numbers,
+	.wp-block-query-pagination .wp-block-query-pagination-previous,
+	.wp-block-query-pagination .wp-block-query-pagination-next {
+		transition: none;
+	}
+
+	.wp-block-button__link {
+		transition: none;
+	}
+}
+
+/* =========================================================================
+ * Bakkerij Lindeboom design layer
+ *
+ * The rules below port the source design (index.html, adapted from the
+ * 'Savor' system) onto the Aludra blocks and the forked starter: flat cards
+ * with no borders or shadows, one 5px radius on buttons and fields, cream
+ * buttons with warm-brown text, Fraunces display headings at weight 400,
+ * sentence-case labels, and full-bleed photos. Each rule names its section
+ * and why theme.json or a block style variation cannot express it.
+ * ========================================================================= */
+
+/* Global (source base CSS): one button height and one radius, thick underlines.
+ * theme.json carries the button colours, padding and heading type; a minimum
+ * height, hover transition and text-decoration thickness are not expressible
+ * there. */
+.wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 3.875rem; /* 62px, source .btn */
+	transition: background-color 150ms ease;
+}
+
+/* Global (source base CSS): link decoration thickness, inherited colours. */
+a {
+	text-decoration-thickness: 2px;
+}
+
+/* Global (source base CSS): the one focus treatment. AGENTS.md: never remove
+ * a focus outline, so this replaces the outline, keeping the offset. */
+:focus-visible {
+	outline: 3px solid var(--wp--preset--color--primary);
+	outline-offset: 3px;
+}
+
+/* Hero (source .hero): text bottom-aligned over the scrim. Cover cannot
+ * express a custom gradient overlay, so the scrim is a pseudo-element; the
+ * inline min-height attribute from the block is overridden at desktop. */
+.wp-block-cover.lindeboom-hero {
+	align-items: flex-end;
+	min-height: min(70svh, 40rem) !important; /* beats the block's inline min-height */
+}
+
+.wp-block-cover.lindeboom-hero::before {
+	background: linear-gradient(
+		to top,
+		color-mix(in srgb, var(--wp--preset--color--primary-alt) 88%, transparent) 0%,
+		color-mix(in srgb, var(--wp--preset--color--primary-alt) 55%, transparent) 55%,
+		color-mix(in srgb, var(--wp--preset--color--primary-alt) 25%, transparent) 100%
+	);
+	bottom: 0;
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	z-index: 1; /* above the background image, below the inner container (z 2) */
+}
+
+/* Hero (source .hero__content): the cover's inner container is a centered
+ * constrained column already; it only needs the end-alignment padding. Core
+ * gives the container `position: relative` but no z-index, so without z 2 the
+ * scrim (z 1) paints over the text; the cream colour comes from the source's
+ * .hero text, which the removed is-light class used to override. */
+.lindeboom-hero .wp-block-cover__inner-container {
+	color: var(--wp--preset--color--base);
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--40);
+	padding-block: 6rem var(--wp--preset--spacing--60);
+	position: relative;
+	z-index: 2;
+}
+
+.lindeboom-hero .wp-block-heading {
+	max-width: 16ch;
+}
+
+.lindeboom-hero__lead {
+	max-width: 38ch;
+}
+
+.lindeboom-hero__kicker {
+	font-weight: 600;
+}
+
+.lindeboom-hero__actions {
+	flex-wrap: wrap;
+	column-gap: var(--wp--preset--spacing--30);
+}
+
+.lindeboom-hero__caption {
+	color: var(--wp--preset--color--sand-deep);
+	font-size: var(--wp--preset--font-size--small);
+	margin-block-start: var(--wp--preset--spacing--40);
+}
+
+@media (min-width: 40rem) {
+	.wp-block-cover.lindeboom-hero {
+		min-height: min(88svh, 50rem) !important; /* source .hero from 640px up; beats the inline attribute */
+	}
+
+	.lindeboom-hero .wp-block-cover__inner-container {
+		padding-block: 7rem var(--wp--preset--spacing--70);
+	}
+}
+
+/* Hero (source .hero :focus-visible): cream focus ring on the dark scrim. */
+.lindeboom-hero :focus-visible {
+	outline-color: var(--wp--preset--color--base);
+}
+
+/* Hero (source .btn--inverse): the second hero button paints its own hover,
+ * because core buttons carry their colour classes with !important. */
+.lindeboom-btn--inverse .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--primary-alt) !important; /* matches core's !important on the colour class */
+	color: var(--wp--preset--color--base) !important;
+}
+
+/* Taarten (source .section + .feature-cards): the block paints its own
+ * tertiary band and cards; the source is flat photography on the page. */
+.wp-block-aludra-feature-cards {
+	background: none;
+	padding-block: var(--wp--preset--spacing--70) var(--wp--preset--spacing--80);
+}
+
+/* Taarten (source .section-intro / h2): the block centres its header and
+ * prints the h2 at weight 800; the source is left-aligned, Fraunces 400. */
+.wp-block-aludra-feature-cards .feature-cards__header {
+	align-items: flex-start;
+	justify-content: flex-start;
+	margin-block-end: var(--wp--preset--spacing--60) !important;
+	text-align: start;
+}
+
+.wp-block-aludra-feature-cards .feature-cards__header h2 {
+	font-size: var(--wp--preset--font-size--x-large);
+	font-weight: 400;
+	text-align: start;
+}
+
+.lindeboom-cakes__intro {
+	margin: 0 !important;
+	max-width: 62ch;
+}
+
+/* Taarten (source .cake): the card chrome, hover lift and accent bar are the
+ * starter's look; the source shows open photographs without frames. */
+.wp-block-aludra-feature-cards .feature-cards__grid {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--wp--preset--spacing--60);
+}
+
+.wp-block-aludra-feature-cards .feature-card {
+	background: none;
+	border: 0;
+	border-radius: 0;
+	padding: 0 !important;
+}
+
+.wp-block-aludra-feature-cards .feature-card::after {
+	content: none;
+}
+
+.wp-block-aludra-feature-cards .feature-card:hover,
+.wp-block-aludra-feature-cards .feature-card:hover::after {
+	box-shadow: none;
+	transform: none;
+}
+
+/* Taarten (source .cake img): the icon slot becomes the photograph itself.
+ * A block variation cannot reach inside the icon wrapper, so this is CSS. */
+.wp-block-aludra-feature-cards .feature-card__icon-wrap {
+	background: none;
+	border-radius: 0;
+	height: auto;
+	margin-block-end: var(--wp--preset--spacing--40) !important;
+	width: 100%;
+}
+
+.wp-block-aludra-feature-cards .feature-card__icon-wrap .wp-block-image,
+.wp-block-aludra-feature-cards .feature-card__icon-wrap img {
+	display: block;
+	height: 100%;
+	margin: 0;
+	width: 100%;
+}
+
+.wp-block-aludra-feature-cards .feature-card__icon-wrap .wp-block-image {
+	aspect-ratio: 4 / 5;
+}
+
+.wp-block-aludra-feature-cards .feature-card__icon-wrap img {
+	object-fit: cover;
+}
+
+/* Taarten (source .cake h3, .cake__desc): body copy at reading size on the
+ * theme's own type scale rather than the block's 14px muted grey. */
+.wp-block-aludra-feature-cards .feature-card .wp-block-heading {
+	font-weight: 420;
+}
+
+.wp-block-aludra-feature-cards .feature-card p {
+	color: var(--wp--preset--color--contrast);
+	font-size: var(--wp--preset--font-size--medium);
+	margin: 0 !important;
+}
+
+.wp-block-aludra-feature-cards .feature-card .lindeboom-cake__meta {
+	font-weight: 600;
+	gap: var(--wp--preset--spacing--30);
+	margin-block-start: var(--wp--preset--spacing--30) !important;
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+}
+
+/* Taarten (source .cake__price): prices in bessenrood. */
+.lindeboom-cake__price {
+	color: var(--wp--preset--color--primary);
+}
+
+/* Taarten (source .cakes__note): the closing note in muted ink. */
+.lindeboom-cakes__note {
+	color: var(--wp--preset--color--secondary);
+	font-size: var(--wp--preset--font-size--small);
+	margin: var(--wp--preset--spacing--60) 0 0 !important;
+	max-width: 48ch;
+}
+
+@media (max-width: 39.9375rem) {
+	.wp-block-aludra-feature-cards .feature-cards__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+/* Workshop (source .section--tint + .workshop__grid): the split-section's own
+ * centred header stays empty, which the block hides; its hairline and its
+ * reveal decoration are not in the source. */
+.wp-block-aludra-split-section {
+	border-bottom: 0;
+}
+
+.wp-block-aludra-split-section .split-section__header:has(> .split-section__heading:empty) {
+	display: none;
+}
+
+/* Workshop (source .workshop h2 + .section-intro): heading and intro sit in
+ * the right column beside the photo, not in the block's centred header. */
+.lindeboom-workshop__title {
+	color: var(--wp--preset--color--contrast);
+	font-size: var(--wp--preset--font-size--x-large);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.08;
+	margin: 0 !important;
+}
+
+.lindeboom-workshop__intro {
+	color: var(--wp--preset--color--contrast);
+	font-size: var(--wp--preset--font-size--medium);
+	margin: var(--wp--preset--spacing--40) 0 0 !important;
+	max-width: 62ch;
+}
+
+.wp-block-aludra-split-section .split-section__content > .wp-block-aludra-service-blocks {
+	margin-block-start: var(--wp--preset--spacing--40) !important;
+}
+
+.wp-block-aludra-split-section .split-section__content > .wp-block-buttons {
+	margin-block-start: var(--wp--preset--spacing--50) !important;
+}
+
+/* Workshop (source .workshop figure): photo in a 16/10 crop with a small
+ * muted caption; core/image has no aspect ratio attribute for 16/10. */
+.lindeboom-workshop__foto img {
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+}
+
+/* Workshop (source .facts): the service-blocks cards are a numbered list in the
+ * starter; the source is a plain definition list, so the numbers go and the
+ * cards open up. */
+.wp-block-aludra-split-section .service-block {
+	background: none;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	transition: none;
+}
+
+.wp-block-aludra-split-section .service-block:hover {
+	box-shadow: none;
+}
+
+.wp-block-aludra-split-section .service-block__header {
+	gap: 0 !important;
+	padding: 0 !important;
+}
+
+/* Workshop (source .facts dt/dd): the block prints big italic index numerals
+ * and 14.5px muted copy; the source has small weight-600 labels (dt) and
+ * muted values (dd). The titles are paragraphs now, so no heading size. */
+.wp-block-aludra-split-section .service-block__num {
+	display: none;
+}
+
+.wp-block-aludra-split-section .service-block__title {
+	color: var(--wp--preset--color--contrast) !important;
+	font-family: var(--wp--preset--font-family--body) !important;
+	font-size: var(--wp--preset--font-size--medium) !important;
+	font-weight: 600 !important;
+	line-height: 1.55 !important;
+	margin: 0 !important;
+}
+
+.wp-block-aludra-split-section .service-block__body {
+	padding: 0.125rem 0 0 0 !important;
+}
+
+.wp-block-aludra-split-section .service-block__desc {
+	color: var(--wp--preset--color--secondary) !important;
+	font-size: var(--wp--preset--font-size--medium) !important;
+	font-weight: 400 !important;
+	line-height: 1.55 !important;
+	margin: 0 !important;
+}
+
+.wp-block-aludra-split-section .service-blocks__list {
+	gap: var(--wp--preset--spacing--30) !important;
+}
+
+/* Workshop (source captions): captions under every photo, muted and small. */
+.lindeboom-workshop__foto figcaption,
+.lindeboom-about__foto figcaption,
+.lindeboom-contact__foto figcaption {
+	color: var(--wp--preset--color--secondary);
+	font-size: var(--wp--preset--font-size--small);
+	margin: 0;
+	margin-block-start: var(--wp--preset--spacing--20);
+}
+
+/* Over ons (source .about__grid): the about block runs one constrained
+ * column; the source is a two-column band with the photo left, text right. */
+.wp-block-aludra-about {
+	padding-block: var(--wp--preset--spacing--70) var(--wp--preset--spacing--80);
+	color: var(--wp--preset--color--contrast); /* the block prints its copy in muted ink */
+}
+
+.wp-block-aludra-about .about-section__content {
+	max-width: min(100% - 2.5rem, 72rem);
+	padding-inline: 0;
+	display: grid;
+	gap: var(--wp--preset--spacing--60);
+}
+
+@media (min-width: 64rem) {
+	.wp-block-aludra-about .about-section__content {
+		align-items: center;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--wp--preset--spacing--70);
+	}
+}
+
+/* Over ons (source .about__text): heading and both paragraphs stack in the
+ * right-hand grid column, beside the photo. */
+.lindeboom-about__text {
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--30);
+}
+
+.wp-block-aludra-about .lindeboom-about__foto {
+	margin: 0;
+}
+
+.wp-block-aludra-about .lindeboom-about__foto img {
+	object-fit: cover;
+}
+
+/* Over ons (source h2 + measure): the block's own title sizes are its
+ * marketing scale; the source h2 is the section heading. */
+.wp-block-aludra-about .about-section__title {
+	font-size: var(--wp--preset--font-size--x-large);
+	letter-spacing: -0.01em;
+	line-height: 1.08;
+}
+
+.wp-block-aludra-about .about-section__lead,
+.wp-block-aludra-about .about-section__closing {
+	font-size: var(--wp--preset--font-size--medium);
+	margin-block-end: 0 !important;
+	max-width: 62ch;
+}
+
+/* Bestellen (source .order): the contact-section keeps its own dark band
+ * (main maps to the source's dark brown), but the two decorative glows, the
+ * glass card and the uppercase labels are the block's own look. */
+.wp-block-aludra-contact-section::before,
+.wp-block-aludra-contact-section::after {
+	display: none;
+}
+
+.wp-block-aludra-contact-section {
+	padding: var(--wp--preset--spacing--70) var(--wp--preset--spacing--30) var(--wp--preset--spacing--80);
+}
+
+.wp-block-aludra-contact-section .contact-section__inner {
+	max-width: min(100% - 2.5rem, 72rem);
+}
+
+.wp-block-aludra-contact-section .contact-section__intro {
+	margin-block-end: var(--wp--preset--spacing--60);
+	text-align: start !important; /* the block centres the intro */
+}
+
+.wp-block-aludra-contact-section .contact-section__heading,
+.wp-block-aludra-contact-section .contact-section__heading em {
+	color: var(--wp--preset--color--base);
+	font-size: var(--wp--preset--font-size--x-large);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.08;
+	text-align: start !important;
+}
+
+/* Source .order .section-intro: intro text in base, not muted. */
+.wp-block-aludra-contact-section .contact-section__sub {
+	color: var(--wp--preset--color--base) !important;
+	margin-inline: 0 !important;
+	max-width: 52ch;
+	text-align: start !important;
+}
+
+.wp-block-aludra-contact-section .contact-section__sub a,
+.wp-block-aludra-contact-section .contact-section__sub a:hover {
+	color: var(--wp--preset--color--base);
+	font-weight: 600;
+}
+
+/* Bestellen (source .order form): no card box, cream fill fields, no borders,
+ * the 5px radius, and a form grid that mirrors the source column layout. */
+.wp-block-aludra-contact-section .contact-section__card {
+	background: none;
+	border: 0;
+	backdrop-filter: none;
+	padding: 0;
+}
+
+.wp-block-aludra-contact-section .contact-section__card form {
+	column-gap: var(--wp--preset--spacing--50);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	row-gap: var(--wp--preset--spacing--50);
+}
+
+/* Bestellen: naam, taart, bericht, knop en notitie span the full width; e-mail
+ * en datum sit side by side, as in the source. (The block's own rule puts the
+ * first two fields in columns — the !important wins over it.) */
+.wp-block-aludra-contact-section .contact-section__card form > p {
+	grid-column: 1 / -1 !important;
+}
+
+.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(2),
+.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(3) {
+	grid-column: auto !important;
+}
+
+@media (max-width: 39.9375rem) {
+	.wp-block-aludra-contact-section .contact-section__card form {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(2),
+	.wp-block-aludra-contact-section .contact-section__card form > p:nth-of-type(3) {
+		grid-column: 1 / -1 !important;
+	}
+}
+
+/* Bestellen (source .field label): sentence-case labels, block displays. */
+.wp-block-aludra-contact-section .contact-section__card label {
+	color: var(--wp--preset--color--base);
+	display: block;
+	font-size: var(--wp--preset--font-size--medium);
+	font-weight: 600;
+	letter-spacing: 0;
+	margin-block-end: 0.5rem;
+	text-transform: none;
+}
+
+.wp-block-aludra-contact-section .contact-section__card label .wpcf7-form-control-wrap,
+.wp-block-aludra-contact-section .contact-section__card label > span:has(> .wpcf7-form-control-wrap) {
+	display: block;
+	margin-block-start: 0.5rem;
+}
+
+/* Bestellen (source .field .hint): the hint sits below the label as small
+ * muted text; CF7 renders it inside the label, above the field. The date
+ * field's hint stays on the label line, so its input aligns with the e-mail
+ * input beside it. */
+.wp-block-aludra-contact-section .contact-section__card .lindeboom-hint {
+	color: var(--wp--preset--color--sand-deep);
+	display: block;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 400;
+	margin-block-start: 0.5rem;
+}
+
+.wp-block-aludra-contact-section .contact-section__card .lindeboom-hint--inline {
+	display: inline;
+	margin-block-start: 0;
+	margin-inline-start: 0.75rem;
+}
+
+/* Bestellen (source .field input): cream-white fill, no border, 5px radius,
+ * full width — including the date input, which the block's own field rule
+ * leaves at native width. */
+.wp-block-aludra-contact-section .contact-section__card input[type="text"],
+.wp-block-aludra-contact-section .contact-section__card input[type="email"],
+.wp-block-aludra-contact-section .contact-section__card input[type="tel"],
+.wp-block-aludra-contact-section .contact-section__card input[type="url"],
+.wp-block-aludra-contact-section .contact-section__card input[type="date"],
+.wp-block-aludra-contact-section .contact-section__card select,
+.wp-block-aludra-contact-section .contact-section__card textarea {
+	background: var(--wp--custom--color--field);
+	border: 0;
+	border-radius: 5px;
+	box-sizing: border-box;
+	color: var(--wp--preset--color--contrast);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--medium);
+	padding: 0.9375rem 1.125rem;
+	width: 100%;
+}
+
+.wp-block-aludra-contact-section .contact-section__card input::placeholder,
+.wp-block-aludra-contact-section .contact-section__card textarea::placeholder {
+	color: var(--wp--preset--color--secondary);
+	opacity: 1;
+}
+
+/* Bestellen (source .order :focus-visible): the block swaps borders and adds a
+ * tinted box-shadow; the source uses one cream outline. */
+.wp-block-aludra-contact-section .contact-section__card input:focus-visible,
+.wp-block-aludra-contact-section .contact-section__card select:focus-visible,
+.wp-block-aludra-contact-section .contact-section__card textarea:focus-visible {
+	background: var(--wp--custom--color--field);
+	border-color: transparent;
+	box-shadow: none;
+	outline: 3px solid var(--wp--preset--color--base);
+	outline-offset: 3px;
+}
+
+/* Bestellen (source .order .btn): the submit is the page's own cream button,
+ * not the block's uppercase arrow. */
+.wp-block-aludra-contact-section .contact-section__card input[type="submit"] {
+	background-color: var(--wp--custom--color--cream);
+	background-image: none;
+	border-radius: 5px;
+	color: var(--wp--preset--color--contrast);
+	font-size: var(--wp--preset--font-size--base);
+	font-weight: 600;
+	letter-spacing: 0;
+	min-height: 3.875rem;
+	padding: 1.0625rem 1.75rem;
+	text-transform: none;
+	transition: background-color 150ms ease;
+	width: auto;
+}
+
+.wp-block-aludra-contact-section .contact-section__card input[type="submit"]:hover {
+	background-color: var(--wp--custom--color--cream-hover);
+	box-shadow: none;
+	transform: none;
+}
+
+/* Bestellen (source .order__response): the note under the button, left-aligned
+ * with the form (the card's constrained layout would centre it). */
+.lindeboom-order__response {
+	color: var(--wp--preset--color--sand-deep);
+	font-size: var(--wp--preset--font-size--small);
+	margin-block-start: var(--wp--preset--spacing--30);
+	margin-inline: 0 !important;
+	max-width: 46ch;
+	text-align: start;
+}
+
+/* Contact (source .contact__grid): the icon-grid runs a flat two-column band
+ * with the shop photo left and details right; the block's tinted item cards
+ * and its own band padding are the starter's look. */
+.wp-block-aludra-icon-grid {
+	background: none;
+	padding-block: var(--wp--preset--spacing--70) var(--wp--preset--spacing--80);
+}
+
+.wp-block-aludra-icon-grid .icon-grid__inner {
+	display: grid;
+	gap: var(--wp--preset--spacing--60);
+}
+
+.wp-block-aludra-icon-grid .icon-grid__title {
+	grid-column: 1 / -1;
+	margin: 0 !important;
+	color: var(--wp--preset--color--contrast);
+	font-size: var(--wp--preset--font-size--x-large);
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.08;
+}
+
+@media (min-width: 64rem) {
+	.wp-block-aludra-icon-grid .icon-grid__inner {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-items: center;
+		gap: var(--wp--preset--spacing--70);
+	}
+}
+
+/* Contact (source .contact__figure): the storefront photo cropped onto the
+ * sign and the lit kitchen. */
+.lindeboom-contact__foto {
+	margin: 0;
+}
+
+.lindeboom-contact__foto img {
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	object-position: 50% 18%;
+}
+
+/* Contact (source .contact__details): the icon chips and card styling go; the
+ * items read as plain rows with small icons. */
+.wp-block-aludra-icon-grid .icon-grid__item {
+	background: none;
+	border: 0;
+	border-radius: 0;
+	padding: 0;
+	transition: none;
+}
+
+.wp-block-aludra-icon-grid .icon-grid__item:hover {
+	border-color: transparent;
+	box-shadow: none;
+}
+
+.wp-block-aludra-icon-grid .icon-grid__icon {
+	background: var(--wp--preset--color--tertiary);
+}
+
+.wp-block-aludra-icon-grid .icon-grid__text {
+	color: var(--wp--preset--color--contrast) !important;
+	font-size: var(--wp--preset--font-size--medium) !important;
+}
+
+.wp-block-aludra-icon-grid .icon-grid__grid {
+	gap: var(--wp--preset--spacing--40);
+}
+
+/* Header (source .wordmark): the starter prints the wordmark at weight 800
+ * in its display face; the source is Fraunces 400 at 22px. */
+.lindeboom-header .wp-block-site-title a {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.375rem;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.08;
+}
+
+/* Header (source .btn--primary as CTA): the starter's header CTA is a small
+ * mono pill; the source header repeats the standard cream button. */
+.lindeboom-header__cta .wp-block-button__link {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--base);
+	font-weight: 600;
+	letter-spacing: 0;
+	padding: 0.875rem 1.25rem;
+	border-radius: 5px;
+	transition: background-color 150ms ease;
+	white-space: nowrap;
+}
+
+/* Header (source .nav-toggle .site-nav): the open mobile menu is a warm cream
+ * panel of left-aligned links with an underline hover — core paints its
+ * default white panel through !important colour utilities, hence the two
+ * !importants here, matching the reference. */
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open {
+	background-color: var(--wp--preset--color--tertiary) !important;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open *,
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-close {
+	color: var(--wp--preset--color--contrast) !important;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
+	align-items: flex-start;
+	padding: var(--wp--preset--spacing--40) 1.25rem var(--wp--preset--spacing--60); /* source .nav-toggle .site-nav; the close button sits outside this list, so it keeps its corner */
+	text-align: left;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+	font-size: 1.125rem;
+	font-weight: 500;
+	min-height: 3rem;
+	padding: 0.5rem 0.25rem;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content:hover {
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
+/* Header (source .nav-toggle .site-nav .nav-cta): the "Bestel een taart" CTA as
+ * the last row of the open panel — the source's full-width cream .btn with
+ * centred text and the 5px button radius. Hidden from 64rem up, where the nav
+ * renders inline and the header's own CTA shows instead. */
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .lindeboom-nav-cta {
+	justify-content: flex-start; /* beats the nav's items-justified-right, so the link fills the li instead of hugging the right edge */
+	margin-top: var(--wp--preset--spacing--30);
+	width: 100%;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .lindeboom-nav-cta .wp-block-navigation-item__content {
+	align-items: center;
+	background: var(--wp--custom--color--cream);
+	border-radius: 5px;
+	box-sizing: border-box;
+	display: flex;
+	flex: 1 1 auto;
+	font-size: var(--wp--preset--font-size--base);
+	font-weight: 600;
+	justify-content: center;
+	min-height: 3.875rem;
+	padding: 1.0625rem 1.75rem;
+	text-decoration: none;
+	width: 100%;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .lindeboom-nav-cta .wp-block-navigation-item__content:hover {
+	background: var(--wp--preset--color--primary-accent);
+	text-decoration: none;
+}
+
+@media (min-width: 64rem) {
+	.lindeboom-header .lindeboom-nav-cta {
+		display: none;
+	}
+}
+
+/* Footer (source .site-footer): the cream footer band, Fraunces wordmark and
+ * four columns; the starter's footer rules target a different class. */
+.lindeboom-footer {
+	background: var(--wp--custom--color--cream);
+	color: var(--wp--preset--color--contrast);
+	padding-block: var(--wp--preset--spacing--70) var(--wp--preset--spacing--40);
+}
+
+.lindeboom-footer .wp-block-group {
+	gap: 0;
+}
+
+.lindeboom-footer__grid {
+	display: grid;
+	gap: var(--wp--preset--spacing--50);
+}
+
+@media (min-width: 64rem) {
+	.lindeboom-footer__grid {
+		grid-template-columns: 1.4fr 1fr 1fr 1fr;
+	}
+}
+
+.lindeboom-footer .wp-block-site-title a {
+	color: var(--wp--preset--color--contrast);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	text-decoration: none;
+}
+
+.lindeboom-footer__note {
+	color: var(--wp--preset--color--secondary);
+	max-width: 26ch;
+}
+
+/* Footer (source .site-footer h3): small sentence headings, not display type. */
+.lindeboom-footer .wp-block-heading {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0;
+	margin: 0 0 var(--wp--preset--spacing--30);
+}
+
+/* Footer (source .hours / lists): muted values, weight-600 labels. */
+.lindeboom-footer__col .wp-block-group,
+.lindeboom-footer__col .wp-block-navigation {
+	gap: 0.625rem;
+}
+
+.lindeboom-footer .wp-block-navigation {
+	margin: 0;
+}
+
+.lindeboom-footer .wp-block-navigation .wp-block-navigation__container {
+	flex-direction: column;
+	gap: 0.625rem;
+	justify-content: flex-start;
+}
+
+/* Footer (source .site-footer a): the menu links are small and underlined like
+ * the other footer links, not core's larger undecorated navigation links. */
+.lindeboom-footer .wp-block-navigation-item__content {
+	color: inherit;
+	font-size: var(--wp--preset--font-size--small);
+	text-decoration: underline;
+}
+
+.lindeboom-footer a {
+	color: inherit;
+	text-decoration-thickness: 2px;
+	text-underline-offset: 4px;
+}
+
+.lindeboom-footer a:hover,
+.lindeboom-footer a:focus-visible {
+	color: var(--wp--preset--color--primary);
+}
+
+.lindeboom-footer__col p,
+.lindeboom-footer__col .wp-block-navigation__item {
+	color: var(--wp--preset--color--secondary);
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.lindeboom-footer__col strong {
+	color: var(--wp--preset--color--contrast);
+	font-weight: 600;
+}
+
+/* Footer (source .legal): credits row under the columns. */
+.lindeboom-footer__legal {
+	color: var(--wp--preset--color--secondary);
+	font-size: var(--wp--preset--font-size--small);
+	margin-block-start: var(--wp--preset--spacing--70);
+}
+
+.lindeboom-footer__legal p {
+	margin: 0;
+}
+

@@ -9,7 +9,7 @@ step shows the exact command, then the prompt to paste:
 
 ```bash
 cd ~/code/bakery-demo
-vibe --agent <agent> --smart-approve
+vibe --agent <agent>
 ```
 
 | # | Step | Agent | Outcome | Commit |
@@ -18,8 +18,8 @@ vibe --agent <agent> --smart-approve
 | 1 | Build from brief | `wp-frontend-builder` | `index.html` with Savor adapted, Dutch copy, the photos from `CREDITS.md`, contrast and widths measured; visual check not done by the agent (GLM-5.3 has no image support), see notes under 1 | `4a56809` |
 | 2 | Review the built page | `ux-designer` | Two notes on Mistral Medium 3.5, visual pass done; note 1 real (open menu under the hero), note 2 adjusted; missed the macarons link | `c0c5059` |
 | 3 | Apply review notes | `ux-designer` (by mistake) | Note 1, a softened note 2 and the macarons link applied, checked at 390px | `c5af28f` |
-| 4 | Convert to a block theme (Mode B, Aviendha + Aludra) | `wp-frontend-builder` | Not run yet | – |
-| 5 | Design pass against `index.html` | `wp-frontend-builder` | Not run yet | – |
+| 4 | Convert to a block theme (Mode B, Aviendha + Aludra) | `wp-frontend-builder` | `theme-lindeboom/` forked from Aviendha, homepage pattern on six Aludra blocks plus a core Cover hero, active on the local site; draft PR #1 | `60f881c` |
+| 5 | Design pass against `index.html` | `wp-frontend-builder` | In progress: first pass committed as `wip` (5a); 5b stopped after 11 minutes without an edit; 5c fixed button hover and the mobile menu colour; 5d the menu gutter, its button and cache-busting | `9964aa4` |
 
 ## 0. Setup
 
@@ -62,7 +62,7 @@ not by looking. Look at the result yourself, or let stage 2 do it.
 
 ```bash
 cd ~/code/bakery-demo
-vibe --agent wp-frontend-builder --smart-approve
+vibe --agent wp-frontend-builder
 ```
 
 Then paste this prompt:
@@ -148,7 +148,7 @@ model could not see the screenshots: switch model and run it again. If it calls 
 
 ```bash
 cd ~/code/bakery-demo
-vibe --agent ux-designer --smart-approve
+vibe --agent ux-designer
 ```
 
 Then paste this prompt:
@@ -184,7 +184,7 @@ through `html-page-review/frame.html`.
 
 ```bash
 cd ~/code/bakery-demo
-vibe --agent wp-frontend-builder --smart-approve
+vibe --agent wp-frontend-builder
 ```
 
 Then paste this prompt:
@@ -222,17 +222,17 @@ with `vibe --agent wp-frontend-builder`.
 
 Agent: `wp-frontend-builder`, with `html-to-block-theme`.
 
-**Model:** a fast coding model such as GLM for the conversion. Before you accept its report, run
-`/model mistral-medium-3.5` in the same session and ask it to compare the screenshots of
-`index.html` and the site section by section. Without that switch, "what still differs" comes from
-measurements only.
+**Model:** Mistral Large 4: a full conversion needs its 1M context, and its image support lets it
+compare the screenshots of `index.html` and the site section by section. Ask for that comparison
+before you accept the report. On a text-only model, "what still differs" comes from measurements
+only, however confident the report sounds: switch with `/model` for the comparison.
 
 Run it on a branch:
 
 ```bash
 cd ~/code/bakery-demo
 git switch -c feat/block-theme
-vibe --agent wp-frontend-builder --smart-approve
+vibe --agent wp-frontend-builder
 ```
 
 Then paste this prompt:
@@ -275,7 +275,25 @@ Why it is written this way:
 - **Screenshots compared:** sentinel and the block checks pass on a page that looks nothing like
   the source; only a visual comparison shows the difference.
 
-Result: _not run yet._
+Result (`60f881c`, Mistral Large 4): `theme-lindeboom/` as a fork of Aviendha, symlinked into
+`~/code/lindeboom-demo/wp-content/themes/lindeboom` and active at https://lindeboom-demo.test.
+- **Homepage pattern:** `patterns/homepage.php` uses `aludra/feature-cards` (cakes),
+  `aludra/service-blocks` and `aludra/split-section` (workshop), `aludra/about`,
+  `aludra/contact-section` with the Contact Form 7 shortcode (order form) and `aludra/icon-grid`
+  (contact). The hero is a core Cover block, the gap the prompt expected.
+- **Fonts and images:** Fraunces and Hanken Grotesk as variable woff2 in `assets/fonts/`, the
+  photos and `CREDITS.md` in `assets/img/`.
+- **Palette:** the Aludra slugs take their values from `index.html`. The names do not line up one to
+  one: the design's berry red `--tertiary` (`#9c3524`) is the theme's `primary`, and the design's
+  cream button colour `--primary` (`#efe1c3`) sits on `styles.elements.button`, with `#e3d2ac` as
+  `primary-accent` and `custom.color.cream-hover`. Keep this in mind when a prompt names a colour.
+- **Design layer:** started in the same run, at the end of `style.css` under
+  "Bakkerij Lindeboom design layer".
+- The theme carries Aviendha's WooCommerce templates and `styles/twilight.json`; neither is used
+  by the demo.
+
+The section-by-section report from the run was not kept, so stage 5 starts from fresh
+screenshots.
 
 ## 5. Design pass against `index.html`
 
@@ -283,13 +301,13 @@ Agent: `wp-frontend-builder`, on the same branch as 4, so its diff shows only th
 Fill in the numbered list from the differences prompt 4 reported and from your own screenshots,
 one point per difference.
 
-**Model:** a fast coding model such as GLM for the fixes, then `/model mistral-medium-3.5` in the
-same session for the before and after comparison.
+**Model:** the model with image support from stage 4 (Mistral Large 4), for the fixes and the
+before and after comparison.
 
 ```bash
 cd ~/code/bakery-demo
 git switch feat/block-theme
-vibe --agent wp-frontend-builder --smart-approve
+vibe --agent wp-frontend-builder
 ```
 
 Then paste this prompt:
@@ -303,4 +321,144 @@ Load html-to-block-theme. theme-lindeboom/ does not yet match index.html. Do a d
 Fix each point with a block style variation or theme.json first; use the design-layer block in style.css only for what is left, with one comment per rule. Run the checks from prompt 4 after every pattern or part change, then re-screenshot and list per point what you changed and what still differs.
 ```
 
-Result: _not run yet._
+### 5a. First pass
+
+Result (`9964aa4`, committed as `wip`): `homepage.php` and the design layer in `style.css`
+reworked, five contact icons added in `assets/icons/`, the order form text updated. The design
+layer is now about 800 lines.
+
+Checked afterwards, outside the session, by reading the hover rules that match each element on the
+live site and hovering the header button:
+- **Primary buttons did not change on hover.** In `theme.json`, `styles.elements.button[":hover"]`
+  had `"background": "#E3D2AC"` at the top level, which WordPress ignores; it belongs under
+  `"color": {"background": ...}`. Hovered, the header button stayed `rgb(239, 225, 195)`.
+- The design's 150ms `background-color` transition on buttons was missing.
+- Correct: the inverse hero button (to `#2a1608`), links in the nav, cake cards, contact and footer
+  (to berry red), the form submit (to `#e3d2ac`), and the cake cards without Aludra's hover lift.
+- The only console error is a missing `favicon.ico` (404).
+
+### 5b. Hover states and remaining differences
+
+Same start command, Mistral Large 4 (high). The prompt used:
+
+```
+Load html-to-block-theme. Continue the stage 5 design pass: theme-lindeboom/ must match index.html, including hover and focus states. Screenshot index.html and https://lindeboom-demo.test at 1440px and 390px before and after (390px through html-page-review/frame.html; never --window-size=390).
+
+1. Button hover does nothing: in theme.json styles.elements.button[":hover"], "background" sits at the top level and is ignored. Move it to "color": {"background": "var(--wp--preset--color--primary-accent)"} (#E3D2AC, design --primary-hover) and keep the text colour contrast. Verify by hovering the header CTA and both hero buttons and reading the computed background.
+2. Add the design's button transition (background-color 150ms ease) through theme.json or, if that's not possible, one design-layer rule; keep the prefers-reduced-motion override.
+3. Hover-check every other interactive element against index.html (nav links desktop and the open mobile menu, cake card links, contact links, footer links, form submit, skip link and :focus-visible rings incl. the cream ring on the hero) and fix any that differ, theme.json first, design layer last.
+4. Compare the rest of the page section by section with the screenshots and list what still differs; fix only what's clearly off, report the rest.
+
+Run the checks from prompt 4 after any pattern or part change (php -l, phpcs, sentinel, aludra wrapper check). End with a per-point list of what changed and what still differs.
+```
+
+Result: stopped after about 11 minutes, no file in `theme-lindeboom/` changed, todo list at 0/9,
+around ten approval prompts. The session started before toolbox PRs #77 and #78, so it had no
+named command for slicing screenshots or checking hover states, and improvised each one:
+- `python3 -c "import PIL"`, then a `python3` heredoc to slice the screenshots
+- a `for` loop with `convert … "${f%.png}.jpg"`, then a second loop to scale the slices down,
+  because a 1440px-wide image did not come through inline
+- `node --version` and websocket probes, then `/tmp/shots/cdp.mjs`, a DevTools script to hover over
+  elements, written and run twice before it was told to stop
+- after "understood, CSS only", another `python3` heredoc to parse the page's CSS
+- from its own CDP script, "the mobile menu does not open": wrong. Checked in a real browser at
+  390px, the menu opens with all four links.
+
+That browser check found a real bug instead: the open mobile menu is brown, because the design
+layer paints it `var(--wp--preset--color--secondary)`, the design's name for `#f5ebd9`, while the
+theme's `secondary` is `#755D43`. Menu text contrast 2.35:1 (12.26:1 with the theme's `tertiary`).
+The links are also right-aligned (`text-align` in a flex container), and the design's
+"Bestel een taart" button in the panel is missing.
+
+Lessons, now in the toolbox (`wp-vibe-toolbox` #77, #78):
+- One `magick … -crop … -resize 1100x … %02d.jpg` command slices, scales and converts.
+- Hover and focus come from the CSS (`curl … | grep -o ':hover[^}]*}'`, `grep` on `index.html`
+  and `style.css`), never a DevTools script.
+- Hover colours in `theme.json` go under `color`.
+- The prompt was too open: before screenshots and a full comparison ahead of any edit invited the
+  exploring. Known fixes go in as a list of exact edits, checked afterwards.
+
+### 5c. Exact edits, checked afterwards
+
+A fresh session (toolbox with #77 and #78), Mistral Large 4. The prompt used:
+
+```
+Load html-to-block-theme. Make these edits in theme-lindeboom/ first, then check. No screenshots before editing, no python3, node, heredocs, loops or CDP scripts.
+
+1. theme.json styles.elements.button[":hover"]: move "background" under "color": {"background": "var(--wp--preset--color--primary-accent)"}, keep text contrast.
+2. theme.json or one design-layer rule: buttons get transition: background-color 150ms ease (keep the reduced-motion override).
+3. style.css ~1952 (open mobile menu): background var(--wp--preset--color--secondary) → tertiary. Theme secondary is #755D43, design secondary #f5ebd9 = theme tertiary.
+4. Open mobile menu links left-aligned like .nav-toggle .site-nav in index.html (align-items: flex-start on the open .wp-block-navigation__container).
+5. Check every var(--wp--preset--color--*) in the "Bakkerij Lindeboom design layer" block against theme.json values, not names (design tertiary = theme primary, design secondary = theme tertiary); fix any that point at the wrong colour.
+
+Then check, one command each: php -l on changed PHP, vendor/bin/phpcs --standard=phpcs.xml . in theme-lindeboom/, and
+curl -s https://lindeboom-demo.test/ | grep -o 'wp-element-button:hover[^}]*}'
+(must show background-color). Report per point what you changed. I check hover and the mobile menu in the browser myself.
+```
+
+Left for a later run: the "Bestel een taart" button in the mobile panel, and a section-by-section
+comparison with screenshots.
+
+Result (Mistral Large 4, Vibe 3.1.2, toolbox with #77 and #78, `awk` removed from the
+allowlist): no approval prompts, all allowlisted `grep`, `sed -n` and `wc` calls, and edits 1–4
+within a few minutes, against 11 minutes without an edit in 5b. It reported point 5 as findings
+first and asked before running the checks.
+- `theme.json`: the button `:hover` background sits under `color`. The served CSS shows
+  `.wp-block-button__link:hover{background-color: var(--wp--preset--color--primary-accent);…}`.
+- `style.css`: `transition: background-color 150ms ease` on `.wp-block-button__link`, with
+  `transition: none` added to the reduced-motion block.
+- `style.css`: the open mobile menu is painted `tertiary` (`#F5EBD9`) instead of `secondary`, and
+  its links get `align-items: flex-start`.
+- Point 5: all 38 `var(--wp--preset--color--*)` uses in the design layer listed with the source
+  rule they port; the menu background was the only one pointing at the wrong colour.
+- Checks: `php -l` and `phpcs` clean, the curl hover rule shows `background-color`.
+
+Checked by hand afterwards, outside the session, in a browser: hovering the header button at
+1440px turns it from `#efe1c3` to `#e3d2ac`; at 390px the open menu is cream with the links on the
+left. Two findings:
+- **Cache:** the first look still showed the brown menu. `style.css` is enqueued with the theme
+  version (`?ver=1.0.0`, `functions.php:83`), which an edit does not change, so the browser kept
+  the old file. `woocommerce.css` right below uses `filemtime()`. Reload with Cmd+Shift+R, or
+  version `style.css` the same way.
+- **New difference:** the menu links now start at x = 0, against the screen edge; the design's
+  panel has a 1.25rem side gutter.
+
+### 5d. Mobile menu gutter and button, cache-busting
+
+Same session as 5c. The prompt used:
+
+```
+Next round, same rules (edit first, then check; no python3, node, heredocs, loops or CDP):
+
+1. Open mobile menu: the links now start at x = 0, against the screen edge. Give the open panel the source's side gutter (index.html .nav-toggle .site-nav: padding var(--wp--preset--spacing--40) 1.25rem var(--wp--preset--spacing--60)), on the open .wp-block-navigation__responsive-container-content or the container, without moving the close button off its corner.
+2. Add the "Bestel een taart" CTA at the bottom of the open mobile panel like index.html .nav-cta (primary cream background, button radius, centred text, full width, only in the mobile panel, hidden from 1024px). Use a navigation-link with a class in parts/header.html if possible; otherwise report why not.
+3. functions.php:79-83: version style.css with (string) filemtime( get_template_directory() . '/style.css' ) like woocommerce.css below it, so browsers pick up edits.
+
+Checks, one command each: php -l functions.php, vendor/bin/phpcs --standard=phpcs.xml . in theme-lindeboom/, sentinel with --url https://lindeboom-demo.test --user admin --pass admin (header part changed), and curl -s https://lindeboom-demo.test/ | grep -o 'style.css?ver=[^"]*' (must show a timestamp). Report per point. I check the menu in the browser.
+```
+
+(The first version of point 3 said `get_stylesheet_directory()`. The agent noticed that the same call
+uses `get_template_directory_uri()`, followed the prompt anyway, and switched after a correction.
+Same folder in a standalone theme, wrong one in a child theme.)
+
+Result: no approval prompts; all four checks pass (sentinel: 1 pattern, PASS).
+- Gutter on the open `.wp-block-navigation__container`; the close button is a sibling of the list
+  and stays in its corner. Links now start at x = 20.
+- The button is a `core/navigation-link` with class `lindeboom-nav-cta` as the last item in
+  `parts/header.html`, styled in the design layer for the open panel only and hidden from 64rem.
+- `style.css` is versioned with `filemtime()`; the page now loads `style.css?ver=<timestamp>`, and a
+  plain reload picks up each edit.
+
+Measured in a browser after each report, two rounds of fixes before the button was right:
+- First: the link sat at x 203–360, half width and pushed right by the navigation's
+  `items-justified-right` flex, with the label at the top of a 96px block.
+- After `justify-content: flex-start`, `flex: 1 1 auto`, `width: 100%` and `align-items: center`:
+  x −36 to 360 and still 96px tall. The link was `content-box`, so 100% width plus 2×28px padding
+  and a 62px min-height plus 2×17px padding. The agent's report said "fills 20–360px, 62px tall";
+  the browser said otherwise.
+- After `box-sizing: border-box`: x 20–360, 62px tall, label centred both ways, no horizontal
+  scroll at 390px. Hidden at 1440px, where the navigation shows its four links.
+
+Lesson: the agent's own report of a layout fix is a prediction. Measure it in a browser (bounding
+boxes at the exact width) before accepting it; each wrong round here was caught that way, not by
+the checks, which all passed every time.

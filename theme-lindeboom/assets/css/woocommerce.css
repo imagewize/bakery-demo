@@ -1,0 +1,566 @@
+/**
+ * Lindeboom WooCommerce overrides.
+ *
+ * Enqueued only when WooCommerce is active (see functions.php). The design
+ * system lives in theme.json — this file only holds what theme.json cannot
+ * express, on the same terms as style.css does for core blocks: pseudo-classes,
+ * elements WooCommerce renders outside any block, and blocks that declare no
+ * colour or typography supports for theme.json to hook into.
+ *
+ * 1. Mini cart drawer
+ * 2. Product gallery
+ * 3. Prices
+ * 4. Quantity stepper
+ * 5. Add to cart button
+ * 6. Product meta
+ * 7. Specifications
+ * 8. Reviews
+ * 9. Product filters
+ * 10. Product grid
+ * 11. Sort dropdown
+ */
+
+/* -------------------------------------------------------------------------
+ * 1. Mini cart drawer
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The drawer panel is a component wrapper outside the mini-cart-contents
+ * block, so the `woocommerce/mini-cart-contents` theme.json entry can't reach
+ * it — WooCommerce hardcodes `background: #fff`. Left alone, a dark style
+ * variation renders light contents text on a white panel.
+ */
+.wc-block-components-drawer {
+	background: var(--wp--preset--color--base);
+	border-left-color: var(--wp--preset--color--border-light);
+}
+
+/* -------------------------------------------------------------------------
+ * 2. Product gallery
+ * ------------------------------------------------------------------------- */
+
+/*
+ * `product-image-gallery` renders the classic PHP gallery, so nothing in it
+ * is a block: the image radius has to match the product cards by hand, and the
+ * sale flash is a bare `span.onsale` that WooCommerce styles as a green circle
+ * hanging off the top-left corner.
+ */
+.wp-block-woocommerce-product-image-gallery {
+	position: relative;
+}
+
+.woocommerce-product-gallery .woocommerce-product-gallery__image img {
+	border-radius: var(--wp--preset--border-radius--md);
+}
+
+.wp-block-woocommerce-product-image-gallery span.onsale {
+	background-color: var(--wp--preset--color--primary);
+	border-radius: var(--wp--preset--border-radius--pill);
+	color: var(--wp--preset--color--base);
+	font-size: var(--wp--preset--font-size--xx-small);
+	font-weight: 600;
+	inset: var(--wp--preset--spacing--x-small) auto auto var(--wp--preset--spacing--x-small);
+	letter-spacing: 0.04em;
+	line-height: 1;
+	margin: 0;
+	min-height: 0;
+	min-width: 0;
+	padding: 0.55em 0.95em;
+	position: absolute;
+	text-transform: uppercase;
+	z-index: 2;
+}
+
+/* -------------------------------------------------------------------------
+ * 3. Prices
+ * ------------------------------------------------------------------------- */
+
+/*
+ * A sale price is one `.wc-block-components-product-price` containing `del` and
+ * `ins`. theme.json styles the container, so the two prices arrive at the same
+ * weight and colour and the old price competes with the new one.
+ */
+.wc-block-components-product-price del {
+	color: var(--wp--preset--color--main-accent);
+	font-weight: 400;
+	margin-inline-end: 0.4em;
+	opacity: 1;
+	text-decoration-thickness: 1px;
+}
+
+.wc-block-components-product-price ins {
+	background: none;
+	text-decoration: none;
+}
+
+/* -------------------------------------------------------------------------
+ * 4. Quantity stepper
+ * ------------------------------------------------------------------------- */
+
+/*
+ * `add-to-cart-with-options-quantity-selector` declares no colour, border or
+ * typography supports, so theme.json has no way in. WooCommerce's own rules sit
+ * at two classes; these match that weight through the block wrapper.
+ */
+.wp-block-woocommerce-add-to-cart-with-options-quantity-selector .wc-block-components-quantity-selector {
+	background: var(--wp--preset--color--base);
+	border-color: var(--wp--preset--color--border-light);
+	border-radius: var(--wp--preset--border-radius--pill);
+}
+
+.wp-block-woocommerce-add-to-cart-with-options-quantity-selector .wc-block-components-quantity-selector__button {
+	color: var(--wp--preset--color--secondary);
+	opacity: 1;
+	transition: color 0.18s ease;
+}
+
+.wp-block-woocommerce-add-to-cart-with-options-quantity-selector .wc-block-components-quantity-selector__button:hover:not(:disabled) {
+	color: var(--wp--preset--color--primary);
+}
+
+.wp-block-woocommerce-add-to-cart-with-options-quantity-selector .wc-block-components-quantity-selector__button:disabled {
+	opacity: 0.35;
+}
+
+.wp-block-woocommerce-add-to-cart-with-options-quantity-selector .wc-block-components-quantity-selector__button:focus {
+	box-shadow: none;
+	outline: 2px solid var(--wp--preset--color--accent);
+	outline-offset: -2px;
+}
+
+/* -------------------------------------------------------------------------
+ * 5. Add to cart button
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The `elements.button` hover in theme.json can't reach this one: WordPress
+ * prints element styles before block styles at the same specificity, so the
+ * `woocommerce/product-button` block entry overrides the hover that comes
+ * before it. Restate the hover here, where it lands after both.
+ */
+.wp-block-button.wc-block-components-product-button .wc-block-components-product-button__button:hover {
+	background-color: var(--wp--preset--color--primary-alt);
+	color: var(--wp--preset--color--base);
+}
+
+/* -------------------------------------------------------------------------
+ * 6. Product meta
+ * ------------------------------------------------------------------------- */
+
+/* SKU and tags read as a caption under the buy area, not as body copy. */
+.wp-block-woocommerce-product-meta .wp-block-woocommerce-product-sku,
+.wp-block-woocommerce-product-meta .wp-block-post-terms {
+	font-family: var(--wp--preset--font-family--body);
+	letter-spacing: 0.02em;
+}
+
+/* -------------------------------------------------------------------------
+ * 7. Specifications
+ * ------------------------------------------------------------------------- */
+
+/*
+ * `product-specifications` renders a table with no colour or border supports.
+ * Set as hairline rows with a mono label column it matches the rest of the
+ * page's rules rather than looking like a spreadsheet dropped into it.
+ */
+.wp-block-woocommerce-product-specifications table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.wp-block-woocommerce-product-specifications tbody tr {
+	border-bottom: 1px solid var(--wp--preset--color--border-light);
+}
+
+/*
+ * The header row is `.screen-reader-text`, so the top hairline has to hang off
+ * the first body row instead.
+ */
+.wp-block-woocommerce-product-specifications tbody tr:first-child {
+	border-top: 1px solid var(--wp--preset--color--border-light);
+}
+
+/* Taxonomy-backed attribute values arrive wrapped in a paragraph. */
+.wp-block-woocommerce-product-specifications td p {
+	margin: 0;
+}
+
+.wp-block-woocommerce-product-specifications th,
+.wp-block-woocommerce-product-specifications td {
+	border: 0;
+	padding: var(--wp--preset--spacing--x-small) 0;
+	text-align: left;
+	vertical-align: baseline;
+}
+
+.wp-block-woocommerce-product-specifications th {
+	color: var(--wp--preset--color--accent);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--xx-small);
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	padding-inline-end: var(--wp--preset--spacing--medium);
+	text-transform: uppercase;
+	white-space: nowrap;
+	width: 12rem;
+}
+
+@media (max-width: 600px) {
+	.wp-block-woocommerce-product-specifications th {
+		white-space: normal;
+		width: 8rem;
+	}
+}
+
+/* -------------------------------------------------------------------------
+ * 8. Reviews
+ * ------------------------------------------------------------------------- */
+
+.wp-block-woocommerce-product-review-template > li + li {
+	border-top: 1px solid var(--wp--preset--color--border-light);
+	margin-top: var(--wp--preset--spacing--medium);
+	padding-top: var(--wp--preset--spacing--medium);
+}
+
+.wp-block-woocommerce-product-review-form .comment-reply-title {
+	display: block;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--medium);
+	font-weight: 600;
+	margin-bottom: var(--wp--preset--spacing--x-small);
+}
+
+.wp-block-woocommerce-product-review-form .comment-form input:not([type="submit"], [type="checkbox"]),
+.wp-block-woocommerce-product-review-form .comment-form select,
+.wp-block-woocommerce-product-review-form .comment-form textarea {
+	background: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--border-light);
+	border-radius: var(--wp--preset--border-radius--sm);
+	/* Keep padding and border inside the 100% width; with the default
+	   content-box the fields overflow the column on phones (~7px at 360px). */
+	box-sizing: border-box;
+	color: inherit;
+	font-family: inherit;
+	font-size: var(--wp--preset--font-size--small);
+	padding: 0.6em 0.8em;
+	width: 100%;
+}
+
+.wp-block-woocommerce-product-review-form .comment-form select {
+	width: auto;
+}
+
+.wp-block-woocommerce-product-review-form .comment-form label {
+	color: var(--wp--preset--color--secondary);
+	display: inline-block;
+	font-size: var(--wp--preset--font-size--small);
+	margin-bottom: 0.35em;
+}
+
+/* "Save my name, email…" consent row: the checkbox sits inline with its label
+ * at its natural size, and the label wraps only when it no longer fits. */
+.wp-block-woocommerce-product-review-form .comment-form .comment-form-cookies-consent {
+	align-items: flex-start;
+	display: flex;
+	gap: 0.6em;
+}
+
+.wp-block-woocommerce-product-review-form .comment-form .comment-form-cookies-consent input[type="checkbox"] {
+	flex: none;
+	height: 1.1em;
+	margin: 0.2em 0 0;
+	width: 1.1em;
+}
+
+.wp-block-woocommerce-product-review-form .comment-form .comment-form-cookies-consent label {
+	margin-bottom: 0;
+}
+
+.wp-block-woocommerce-product-review-form .comment-form .required {
+	color: var(--wp--preset--color--primary);
+}
+
+.wp-block-woocommerce-product-review-form .comment-form-rating .stars a {
+	color: var(--wp--preset--color--terracotta);
+}
+
+/* -------------------------------------------------------------------------
+ * 9. Product filters
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The archive sidebar. `product-filter-removable-chips`, `-clear-button`,
+ * `-checkbox-list` and `-price-slider` all declare `interactivity` supports
+ * only, so theme.json has no way in and every control below renders in
+ * WooCommerce's stock greys — including under a dark style variation.
+ *
+ * WooCommerce exposes custom properties for most of it (`--wc-product-filter-*`),
+ * which is the hook to prefer: nothing in the plugin sets them unless an editor
+ * user picks colours on the block, so a value set here always applies, and a
+ * user who does pick colours still wins through the inline style the block
+ * writes on the same wrapper. Where a property doesn't exist the rule has to
+ * out-specify WooCommerce's own, since these block stylesheets are enqueued as
+ * their blocks render and can land after the theme's.
+ */
+
+/*
+ * Each filter group (price, category, availability, rating) is a direct
+ * child of the overlay content wrapper. A hairline between them reads as
+ * one filter panel with sections, rather than four headings stacked with
+ * nothing to separate their controls from the next label. The active-chips
+ * group collapses to `display: none` when empty rather than being removed
+ * from the DOM, so `:last-child` — not `:first-child` — is the safe anchor:
+ * a hidden element still counts for sibling selectors but renders no box,
+ * so it never leaves a stray rule floating above the first visible group.
+ */
+.wc-block-product-filters__overlay-content > div:not(:last-child) {
+	border-bottom: 1px solid var(--wp--preset--color--border-light);
+	padding-bottom: var(--wp--preset--spacing--medium);
+}
+
+/* Chips: the active-filter pills above the sidebar. */
+.wc-block-product-filter-removable-chips {
+	--wc-product-filter-removable-chips-background: var(--wp--preset--color--tertiary);
+	--wc-product-filter-removable-chips-border: var(--wp--preset--color--border-light);
+	--wc-product-filter-removable-chips-text: var(--wp--preset--color--contrast);
+}
+
+/* Radius and gap are hardcoded (2px / 4px), so they need the two-class weight. */
+.wc-block-product-filter-removable-chips .wc-block-product-filter-removable-chips__items {
+	gap: var(--wp--preset--spacing--2-x-small);
+}
+
+.wc-block-product-filter-removable-chips__items .wc-block-product-filter-removable-chips__item {
+	border-radius: var(--wp--preset--border-radius--pill);
+	padding: 0.3em 0.5em 0.3em 0.85em;
+}
+
+.wc-block-product-filter-removable-chips__items .wc-block-product-filter-removable-chips__item .wc-block-product-filter-removable-chips__remove {
+	color: var(--wp--preset--color--secondary);
+	transition: color 0.18s ease;
+}
+
+.wc-block-product-filter-removable-chips__items .wc-block-product-filter-removable-chips__item .wc-block-product-filter-removable-chips__remove:hover {
+	color: var(--wp--preset--color--primary);
+}
+
+/*
+ * The clear button is a core button block, so `elements.button` and the outline
+ * style already reach it. Only WooCommerce's hardcoded `1rem` gap needs
+ * replacing with the spacing scale.
+ */
+.wp-block-woocommerce-product-filter-clear-button .wp-block-buttons {
+	margin-top: var(--wp--preset--spacing--x-small);
+}
+
+/*
+ * Checkbox lists: categories, stock status and rating.
+ *
+ * The border is `control-border`, not `border-light`. With the `currentColor`
+ * wash below removed, this border is the *only* thing that draws an unchecked
+ * box, and WCAG 1.4.11 asks for 3:1 against the background on a control's
+ * boundary — `border-light` is 1.25:1 on `base`, a hairline nobody can find.
+ * `border-light` stays right for the decorative rules and card edges that
+ * criterion doesn't reach.
+ */
+.wc-block-product-filter-checkbox-list {
+	--wc-product-filter-checkbox-list-option-element: var(--wp--preset--color--base);
+	--wc-product-filter-checkbox-list-option-element-border: var(--wp--custom--color--control-border);
+	--wc-product-filter-checkbox-list-option-element-selected: var(--wp--preset--color--base);
+}
+
+/*
+ * WooCommerce fills the unchecked box with a `currentColor` wash from a
+ * pseudo-element, hidden only when the block carries `has-option-element-color`
+ * — an editor-set attribute the template doesn't use. Left in place it sits on
+ * top of the background above, so drop it and let the border do the work.
+ */
+.wc-block-product-filter-checkbox-list .wc-block-product-filter-checkbox-list__input-wrapper::before {
+	display: none;
+}
+
+.wc-block-product-filter-checkbox-list input[type="checkbox"].wc-block-product-filter-checkbox-list__input {
+	border-radius: var(--wp--preset--border-radius--sm);
+}
+
+.wc-block-product-filter-checkbox-list input[type="checkbox"].wc-block-product-filter-checkbox-list__input:checked {
+	background: var(--wp--preset--color--primary);
+	border-color: var(--wp--preset--color--primary);
+}
+
+.wc-block-product-filter-checkbox-list .wc-block-product-filter-checkbox-list__count {
+	color: var(--wp--preset--color--secondary);
+}
+
+.wc-block-product-filter-checkbox-list .wc-block-product-filter-checkbox-list__stars {
+	color: var(--wp--preset--color--terracotta);
+}
+
+.wc-block-product-filter-checkbox-list .wc-block-product-filter-checkbox-list__show-more-button {
+	color: var(--wp--preset--color--primary);
+}
+
+/* Price slider. */
+.wc-block-product-filter-price-slider {
+	--wc-product-filter-price-slider: var(--wp--preset--color--primary);
+	--wc-product-filter-price-slider-handle: var(--wp--preset--color--base);
+	--wc-product-filter-price-slider-handle-border: var(--wp--preset--color--primary);
+}
+
+.wc-block-product-filter-price-slider .text input[type="text"] {
+	background: var(--wp--preset--color--base);
+	border-color: var(--wp--custom--color--control-border);
+	border-radius: var(--wp--preset--border-radius--sm);
+	color: inherit;
+}
+
+/*
+ * The handle's hover and focus states are the one part with no custom property
+ * — WooCommerce hardcodes `#1e1e1e` on `#fff`, which inverts to an invisible
+ * handle under a dark variation. Each vendor pseudo-element needs its own rule:
+ * browsers drop a whole selector list containing one they don't recognise.
+ */
+.wc-block-product-filter-price-slider .wc-block-product-filter-price-slider__range input[type="range"]:focus::-webkit-slider-thumb,
+.wc-block-product-filter-price-slider .wc-block-product-filter-price-slider__range input[type="range"]::-webkit-slider-thumb:hover {
+	background: var(--wp--preset--color--primary);
+	border-color: var(--wp--preset--color--base);
+}
+
+.wc-block-product-filter-price-slider .wc-block-product-filter-price-slider__range input[type="range"]:focus::-moz-range-thumb,
+.wc-block-product-filter-price-slider .wc-block-product-filter-price-slider__range input[type="range"]::-moz-range-thumb:hover {
+	background: var(--wp--preset--color--primary);
+	border-color: var(--wp--preset--color--base);
+}
+
+/* -------------------------------------------------------------------------
+ * 10. Product grid
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The archive grid. `woocommerce/product-template` builds its own grid and
+ * hardcodes `grid-gap: 1.25em` — 20px, a value that sits nowhere on the
+ * spacing scale. The block declares only `interactivity` and layout supports
+ * with `allowEditing: false`, so neither theme.json nor the template markup
+ * has a way in and the gap has to be replaced here.
+ *
+ * Rows get a wider gap than columns on purpose: a column break separates two
+ * images, a row break has to separate an "Add to cart" button from the image
+ * below it, and at 20px the rows ran together into one dense block.
+ */
+.wc-block-product-template__responsive {
+	grid-gap: var(--wp--preset--spacing--large) var(--wp--preset--spacing--medium);
+}
+
+/*
+ * The track formula subtracts the gap WooCommerce assumed, so changing the gap
+ * without changing this makes each track wider than a third of the row and
+ * `auto-fill` drops to two columns. Three columns share two gaps, hence 2/3.
+ * `columns-3` is the only variant the theme's own templates use; the rest follow below.
+ */
+.wc-block-product-template__responsive.columns-3 {
+	grid-template-columns: repeat(auto-fill, minmax(max(150px, calc(33.3333% - var(--wp--preset--spacing--medium) * 2 / 3)), 1fr));
+}
+
+/*
+ * The other column counts WooCommerce offers, for the same reason: the block
+ * writes its own track formula for every `columns-N`, each one assuming the
+ * 1.25em gap, so any count the theme's own templates don't use fell back to it
+ * and `auto-fill` dropped a column — four products set to four columns showed
+ * three, then one. Aludra's store sections ask for four. N columns share N - 1
+ * gaps, so each track gives up (N - 1) / N of one gap. The 150px floor is the
+ * block's own, and is what folds these to two columns on a phone.
+ */
+.wc-block-product-template__responsive.columns-2 {
+	grid-template-columns: repeat(auto-fill, minmax(max(150px, calc(50% - var(--wp--preset--spacing--medium) / 2)), 1fr));
+}
+
+.wc-block-product-template__responsive.columns-4 {
+	grid-template-columns: repeat(auto-fill, minmax(max(150px, calc(25% - var(--wp--preset--spacing--medium) * 3 / 4)), 1fr));
+}
+
+.wc-block-product-template__responsive.columns-5 {
+	grid-template-columns: repeat(auto-fill, minmax(max(150px, calc(20% - var(--wp--preset--spacing--medium) * 4 / 5)), 1fr));
+}
+
+.wc-block-product-template__responsive.columns-6 {
+	grid-template-columns: repeat(auto-fill, minmax(max(150px, calc(16.6667% - var(--wp--preset--spacing--medium) * 5 / 6)), 1fr));
+}
+
+/*
+ * Cards stretch to the tallest in their row, but their content is top-aligned,
+ * so a wrapped two-line title on one card leaves its neighbours' buttons
+ * floating at different heights. Pin the button to the bottom instead.
+ *
+ * The card itself is a bordered container so a product reads as one
+ * contained thing in the grid rather than a bare image. `overflow: hidden`
+ * lets the card's own radius do the rounding, so the product-image block
+ * carries none of its own (see `archive-product.html`,
+ * `product-search-results.html` and `single-product.html`, where the
+ * block's radius attribute was dropped). Hover only darkens the border —
+ * no background tint, transform, or shadow, so nothing moves or reflows
+ * as the pointer crosses a dense grid of these.
+ */
+.wc-block-product-template__responsive .wc-block-product {
+	background: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--border-light);
+	border-radius: var(--wp--preset--border-radius--lg);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-bottom: var(--wp--preset--spacing--medium);
+	transition: border-color 0.16s;
+}
+
+.wc-block-product-template__responsive .wc-block-product:hover {
+	border-color: var(--wp--preset--color--sand-deep);
+}
+
+/* The image sits flush with the card's edges; everything below it gets the card's inline padding. */
+.wc-block-product-template__responsive .wc-block-product :is(.wp-block-post-title, .wp-block-woocommerce-product-price, .wc-block-components-product-button) {
+	padding-inline: var(--wp--preset--spacing--medium);
+}
+
+.wc-block-product-template__responsive .wc-block-product .wc-block-components-product-button {
+	margin-top: auto;
+}
+
+/* -------------------------------------------------------------------------
+ * 11. Sort dropdown
+ * ------------------------------------------------------------------------- */
+
+/*
+ * `catalog-sorting` renders a bare `<select>` with no colour, border or
+ * typography supports — the browser-default control next to the themed
+ * result count and filter sidebar. `appearance: none` drops the native arrow
+ * so a themed chevron can replace it; the SVG is inlined because this file
+ * has no build step to reference a separate asset.
+ */
+.wc-block-catalog-sorting .orderby {
+	appearance: none;
+	background-color: var(--wp--preset--color--base);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2357534E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+	background-position: right 0.7em center;
+	background-repeat: no-repeat;
+	background-size: 1em;
+	border: 1px solid var(--wp--custom--color--control-border);
+	border-radius: var(--wp--preset--border-radius--pill);
+	color: var(--wp--preset--color--contrast);
+	font-family: inherit;
+	padding: 0.55em 2.2em 0.55em 1.1em;
+}
+
+.wc-block-catalog-sorting .orderby:hover {
+	border-color: var(--wp--preset--color--sand-deep);
+}
+
+/*
+ * A real focus ring rather than the border swap this used to do. A 1px border
+ * changing colour is technically a visible indicator, but it is the same
+ * pixel the resting state already draws — next to the quantity stepper's
+ * outline above it read as nothing happening. Offset outwards so the pill's
+ * own border stays legible underneath.
+ */
+.wc-block-catalog-sorting .orderby:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
