@@ -702,8 +702,14 @@ at 1440 and y 218.3 at 390; cake text 342.7px at both widths; select `appearance
 `font-optical-sizing: auto`; no horizontal scroll. `readme.txt` still credited the old font file;
 corrected in the same commit.
 
-Left: the prototype's figure margin (deliberately not ported; better fixed in `index.html`), the
-hero's button row gap at 390 (24px against 16px, which makes the hero 8px taller), and the "Menu"
+Afterwards the prototype was fixed instead: its `.workshop figure` and `.about figure` rules never
+matched (the workshop figure sits in `.workshop__grid`, and the about figure itself carries the
+class `about`), so the browser's default margin stayed. They are now `.workshop__grid figure` and
+`.about__grid figure`; measured, both photos are x 144, 540px wide at 1440 in the prototype and on
+the site, and the About photo matches at 390. New at 390: the site's Workshop photo is x 32, 326px
+wide against the prototype's x 20, 350px (Aludra's split-section padding).
+
+Left: the Workshop photo inset at 390, the hero's button row gap at 390 (24px against 16px, which makes the hero 8px taller), and the "Menu"
 label on the hamburger (core).
 
 Lesson: a heading that looks heavier than the design with the same weight and size is a font file
