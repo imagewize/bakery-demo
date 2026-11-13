@@ -204,9 +204,9 @@
 				},
 				":hover": {
 					"color": {
-						"text": "var(--wp--preset--color--contrast)"
-					},
-					"background": "#E3D2AC"
+						"text": "var(--wp--preset--color--contrast)",
+						"background": "var(--wp--preset--color--primary-accent)"
+					}
 				},
 				":focus": {
 					"outline": {

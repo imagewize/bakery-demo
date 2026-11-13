@@ -1265,6 +1265,10 @@ body .lindeboom-header--dark .wp-block-site-logo {
 	.wp-block-query-pagination .wp-block-query-pagination-next {
 		transition: none;
 	}
+
+	.wp-block-button__link {
+		transition: none;
+	}
 }
 
 /* =========================================================================
@@ -1280,12 +1284,14 @@ body .lindeboom-header--dark .wp-block-site-logo {
 
 /* Global (source base CSS): one button height and one radius, thick underlines.
  * theme.json carries the button colours, padding and heading type; a minimum
- * height and text-decoration thickness are not expressible there. */
+ * height, hover transition and text-decoration thickness are not expressible
+ * there. */
 .wp-block-button__link {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	min-height: 3.875rem; /* 62px, source .btn */
+	transition: background-color 150ms ease;
 }
 
 /* Global (source base CSS): link decoration thickness, inherited colours. */
@@ -1950,7 +1956,7 @@ a {
  * default white panel through !important colour utilities, hence the two
  * !importants here, matching the reference. */
 .lindeboom-header .wp-block-navigation__responsive-container.is-menu-open {
-	background-color: var(--wp--preset--color--secondary) !important;
+	background-color: var(--wp--preset--color--tertiary) !important;
 }
 
 .lindeboom-header .wp-block-navigation__responsive-container.is-menu-open *,
@@ -1959,6 +1965,7 @@ a {
 }
 
 .lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
+	align-items: flex-start;
 	text-align: left;
 }
 
