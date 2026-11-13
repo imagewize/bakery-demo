@@ -1966,6 +1966,7 @@ a {
 
 .lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
 	align-items: flex-start;
+	padding: var(--wp--preset--spacing--40) 1.25rem var(--wp--preset--spacing--60); /* source .nav-toggle .site-nav; the close button sits outside this list, so it keeps its corner */
 	text-align: left;
 }
 
@@ -1979,6 +1980,43 @@ a {
 .lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content:hover {
 	text-decoration: underline;
 	text-underline-offset: 4px;
+}
+
+/* Header (source .nav-toggle .site-nav .nav-cta): the "Bestel een taart" CTA as
+ * the last row of the open panel — the source's full-width cream .btn with
+ * centred text and the 5px button radius. Hidden from 64rem up, where the nav
+ * renders inline and the header's own CTA shows instead. */
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .lindeboom-nav-cta {
+	justify-content: flex-start; /* beats the nav's items-justified-right, so the link fills the li instead of hugging the right edge */
+	margin-top: var(--wp--preset--spacing--30);
+	width: 100%;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .lindeboom-nav-cta .wp-block-navigation-item__content {
+	align-items: center;
+	background: var(--wp--custom--color--cream);
+	border-radius: 5px;
+	box-sizing: border-box;
+	display: flex;
+	flex: 1 1 auto;
+	font-size: var(--wp--preset--font-size--base);
+	font-weight: 600;
+	justify-content: center;
+	min-height: 3.875rem;
+	padding: 1.0625rem 1.75rem;
+	text-decoration: none;
+	width: 100%;
+}
+
+.lindeboom-header .wp-block-navigation__responsive-container.is-menu-open .lindeboom-nav-cta .wp-block-navigation-item__content:hover {
+	background: var(--wp--preset--color--primary-accent);
+	text-decoration: none;
+}
+
+@media (min-width: 64rem) {
+	.lindeboom-header .lindeboom-nav-cta {
+		display: none;
+	}
 }
 
 /* Footer (source .site-footer): the cream footer band, Fraunces wordmark and
