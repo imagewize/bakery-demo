@@ -19,7 +19,7 @@ vibe --agent <agent>
 | 2 | Review the built page | `ux-designer` | Two notes on Mistral Medium 3.5, visual pass done; note 1 real (open menu under the hero), note 2 adjusted; missed the macarons link | `c0c5059` |
 | 3 | Apply review notes | `ux-designer` (by mistake) | Note 1, a softened note 2 and the macarons link applied, checked at 390px | `c5af28f` |
 | 4 | Convert to a block theme (Mode B, Aviendha + Aludra) | `wp-frontend-builder` | `theme-lindeboom/` forked from Aviendha, homepage pattern on six Aludra blocks plus a core Cover hero, active on the local site; draft PR #1 | `60f881c` |
-| 5 | Design pass against `index.html` | `wp-frontend-builder` | In progress: first pass committed as `wip` (5a); 5b stopped after 11 minutes without an edit; 5c fixed button hover and the mobile menu colour | `9964aa4` |
+| 5 | Design pass against `index.html` | `wp-frontend-builder` | In progress: first pass committed as `wip` (5a); 5b stopped after 11 minutes without an edit; 5c fixed button hover and the mobile menu colour; 5d the menu gutter, its button and cache-busting | `9964aa4` |
 
 ## 0. Setup
 
@@ -422,3 +422,43 @@ left. Two findings:
   version `style.css` the same way.
 - **New difference:** the menu links now start at x = 0, against the screen edge; the design's
   panel has a 1.25rem side gutter.
+
+### 5d. Mobile menu gutter and button, cache-busting
+
+Same session as 5c. The prompt used:
+
+```
+Next round, same rules (edit first, then check; no python3, node, heredocs, loops or CDP):
+
+1. Open mobile menu: the links now start at x = 0, against the screen edge. Give the open panel the source's side gutter (index.html .nav-toggle .site-nav: padding var(--wp--preset--spacing--40) 1.25rem var(--wp--preset--spacing--60)), on the open .wp-block-navigation__responsive-container-content or the container, without moving the close button off its corner.
+2. Add the "Bestel een taart" CTA at the bottom of the open mobile panel like index.html .nav-cta (primary cream background, button radius, centred text, full width, only in the mobile panel, hidden from 1024px). Use a navigation-link with a class in parts/header.html if possible; otherwise report why not.
+3. functions.php:79-83: version style.css with (string) filemtime( get_template_directory() . '/style.css' ) like woocommerce.css below it, so browsers pick up edits.
+
+Checks, one command each: php -l functions.php, vendor/bin/phpcs --standard=phpcs.xml . in theme-lindeboom/, sentinel with --url https://lindeboom-demo.test --user admin --pass admin (header part changed), and curl -s https://lindeboom-demo.test/ | grep -o 'style.css?ver=[^"]*' (must show a timestamp). Report per point. I check the menu in the browser.
+```
+
+(The first version of point 3 said `get_stylesheet_directory()`. The agent noticed that the same call
+uses `get_template_directory_uri()`, followed the prompt anyway, and switched after a correction.
+Same folder in a standalone theme, wrong one in a child theme.)
+
+Result: no approval prompts; all four checks pass (sentinel: 1 pattern, PASS).
+- Gutter on the open `.wp-block-navigation__container`; the close button is a sibling of the list
+  and stays in its corner. Links now start at x = 20.
+- The button is a `core/navigation-link` with class `lindeboom-nav-cta` as the last item in
+  `parts/header.html`, styled in the design layer for the open panel only and hidden from 64rem.
+- `style.css` is versioned with `filemtime()`; the page now loads `style.css?ver=<timestamp>`, and a
+  plain reload picks up each edit.
+
+Measured in a browser after each report, two rounds of fixes before the button was right:
+- First: the link sat at x 203–360, half width and pushed right by the navigation's
+  `items-justified-right` flex, with the label at the top of a 96px block.
+- After `justify-content: flex-start`, `flex: 1 1 auto`, `width: 100%` and `align-items: center`:
+  x −36 to 360 and still 96px tall. The link was `content-box`, so 100% width plus 2×28px padding
+  and a 62px min-height plus 2×17px padding. The agent's report said "fills 20–360px, 62px tall";
+  the browser said otherwise.
+- After `box-sizing: border-box`: x 20–360, 62px tall, label centred both ways, no horizontal
+  scroll at 390px. Hidden at 1440px, where the navigation shows its four links.
+
+Lesson: the agent's own report of a layout fix is a prediction. Measure it in a browser (bounding
+boxes at the exact width) before accepting it; each wrong round here was caught that way, not by
+the checks, which all passed every time.
